@@ -1,0 +1,40 @@
+#生成结构体
+#go install github.com/Icemap/yaml2go-cli@latest
+#yaml2go-cli -i config/yaml/app.yaml -o config/generation.go -p config
+
+# 定义伪常量
+host: &host 47.115.160.54
+
+api:
+  baseUrl: api/v1
+  host: 127.0.0.1 # 本地环境启动
+  post: 28080
+  staticPath: ./doc/file/avatar
+
+
+#------------------------------------------ 文件配置   -------------------------------------------------------
+log:
+  level: "debug"
+  filename: ./data/logs/app.log
+  maxAge: 30
+  maxBackups: 60
+  maxSize: 200
+  mode: develop
+  #prod 生产环境（production environment）模式
+
+
+  # ----------------------------------------- Auth 配置   -------------------------------------------------------
+Auth:
+   model: ./config/casbin/dataModel.conf
+   policy: ./config/casbin/policy.csv
+   accessJwtExpireTime: 60m
+   refreshJwtExpireTime: 168h
+   accessJwtSecret: dream_programming_access
+   refreshJwtSecret: dream_programming_refresh
+   issuer: zty
+   isUserExpireTime: 30m
+   roleCacheExpireTime: 168h
+   psdErrorLimit: 10   # 密码锁定次数
+   psdErrorLockTime: 15m
+   rateLimitInterval: 0.5s # 令牌投放速率
+   rateLimitCap: 30  # 限流的最大容量
