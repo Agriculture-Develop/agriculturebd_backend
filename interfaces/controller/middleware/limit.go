@@ -5,7 +5,6 @@ import (
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/units"
 	"github.com/gin-gonic/gin"
 	"github.com/juju/ratelimit"
-	"net/http"
 )
 
 var (
@@ -22,12 +21,12 @@ func RateLimitInit() {
 
 func RateLimitMiddleware() func(c *gin.Context) {
 	return func(c *gin.Context) {
-		res := new(apiCode.Response)
-		if bucket.TakeAvailable(1) < 1 {
-			c.JSON(http.StatusOK, res.NoDataResponse(apiCode.CodeVisitLimitExceeded))
-			c.Abort()
-			return
-		}
-		c.Next()
+		//res := new(apiCode.Response)
+		//if bucket.TakeAvailable(1) < 1 {
+		//	c.JSON(http.StatusOK, res.NoDataResponse(apiCode.CodeVisitLimitExceeded))
+		//	c.Abort()
+		//	return
+		//}
+		//c.Next()
 	}
 }

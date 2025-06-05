@@ -2,27 +2,23 @@ package admin
 
 import (
 	"github.com/Agriculture-Develop/agriculturebd/api/routes/admin/Interface"
-	"github.com/Agriculture-Develop/agriculturebd/interfaces/controller/admin/user"
 	"github.com/gin-gonic/gin"
 )
 
-func Models(r *gin.RouterGroup) {
+func Models(r *gin.RouterGroup, userCtrl Interface.IUserCtrl) {
 
-	// 用户管理接口
-	var userApi Interface.IUserApi = user.NewApi()
-
-	r.POST("/login", userApi.Login)
+	r.POST("/login", userCtrl.Login)
 
 	users := r.Group("/user")
 	{
 
-		users.GET("", userApi.GetUserList)
+		users.GET("", userCtrl.GetUserList)
 
-		users.POST("", userApi.AddUser)
+		users.POST("", userCtrl.AddUser)
 
-		users.PUT("", userApi.ModifyUserInfo)
+		users.PUT("", userCtrl.ModifyUserInfo)
 
-		users.DELETE("", userApi.DeleteUser)
+		users.DELETE("", userCtrl.DeleteUser)
 	}
 
 }

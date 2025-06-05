@@ -27,8 +27,8 @@ type ApiContext[T any] struct {
 	c        *gin.Context
 }
 
-// NewAPiCtrl  Generic factory function for creating an api controller
-func NewAPiCtrl[T any](c *gin.Context) *ApiContext[T] {
+// NewAPiContext  Generic factory function for creating an api controller
+func NewAPiContext[T any](c *gin.Context) *ApiContext[T] {
 	return &ApiContext[T]{
 		Request:  new(T),
 		Response: new(resp.Response),

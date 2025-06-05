@@ -2,7 +2,7 @@ package Interface
 
 import "github.com/gin-gonic/gin"
 
-type IUserApi interface {
+type IUserCtrl interface {
 	Login(c *gin.Context)
 
 	AddUser(c *gin.Context)
