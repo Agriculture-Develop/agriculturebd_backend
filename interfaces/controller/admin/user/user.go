@@ -3,8 +3,6 @@ package user
 import (
 	"go.uber.org/dig"
 
-	//"github.com/Agriculture-Develop/agriculturebd/interfaces/vo/apiCode"
-	//"github.com/Agriculture-Develop/agriculturebd/interfaces/vo/apiModel"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,29 +14,22 @@ func NewUserCtrl() *Ctrl {
 	return new(Ctrl)
 }
 
-// 管理员登录
-func (api *Ctrl) Login(c *gin.Context) {
-	// 待实现
-	c.JSON(200, gin.H{"code": 200, "data": "success"})
-}
-
 // 获取用户列表
 func (api *Ctrl) GetUserList(c *gin.Context) {
-	//ctx := controller.NewAPiCtrl[struct{}](c)
-	//
+	//ctx := controller.NewAPiContext[struct{}](c)
+
 	//page, count, err := ctx.GetPageAndCount()
 	//if err != nil {
-	//	ctx.NoDataJSON(apiCode.CodeInvalidParams)
+	//	ctx.NoDataJSON(resp.CodeInvalidParams)
 	//	return
 	//}
-	//
+
 	//statusCode, users := api.Services.GetUserList(page, count)
-	//ctx.WithDataJSON(statusCode, apiModel.GetUserListResponse{UserList: users})
+	//ctx.WithDataJSON(statusCode, resp.GetUserListResponse{UserList: users})
 }
 
-// 添加用户
 func (api *Ctrl) AddUser(c *gin.Context) {
-	//ctx := controller.NewAPiCtrl[apiModel.AddUserRequestData](c)
+	//ctx := controller.NewAPiCtrl[resp.AddUserRequestData](c)
 	//
 	//if err := ctx.BindJSON(); err != nil {
 	//	ctx.NoDataJSON(apiCode.CodeInvalidParams)
@@ -49,7 +40,6 @@ func (api *Ctrl) AddUser(c *gin.Context) {
 	//ctx.WithDataJSON(statusCode, nil)
 }
 
-// 修改用户信息
 func (api *Ctrl) ModifyUserInfo(c *gin.Context) {
 	//ctx := controller.NewAPiCtrl[struct{}](c)
 	//
@@ -61,10 +51,15 @@ func (api *Ctrl) ModifyUserInfo(c *gin.Context) {
 	//}
 	//
 	//statusCode, data := api.Services.ModifyInfo(rawData, userId)
-	//ctx.WithDataJSON(statusCode, apiModel.ModifyUserInfoResponse{User: data})
+	//ctx.WithDataJSON(statusCode, resp.ModifyUserInfoResponse{User: data})
 }
 
-// 删除用户
+func (api *Ctrl) ModifyPassword(c *gin.Context) {}
+
+func (api *Ctrl) ModifyRole(c *gin.Context) {
+
+}
+
 func (api *Ctrl) DeleteUser(c *gin.Context) {
 	//ctx := controller.NewAPiCtrl[struct{}](c)
 	//

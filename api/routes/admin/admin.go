@@ -1,13 +1,11 @@
 package admin
 
 import (
-	"github.com/Agriculture-Develop/agriculturebd/api/routes/admin/Interface"
+	"github.com/Agriculture-Develop/agriculturebd/api/routes/Interface"
 	"github.com/gin-gonic/gin"
 )
 
 func Models(r *gin.RouterGroup, userCtrl Interface.IUserCtrl) {
-
-	r.POST("/login", userCtrl.Login)
 
 	users := r.Group("/user")
 	{

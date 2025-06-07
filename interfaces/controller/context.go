@@ -74,13 +74,13 @@ func (ctrl *ApiContext[T]) GetPageAndCount() (page int, count int, err error) {
 }
 
 // NoDataJSON parse with Nodata to json and return
-func (ctrl *ApiContext[T]) NoDataJSON(code int64) {
+func (ctrl *ApiContext[T]) NoDataJSON(code resp.StatusCode) {
 	ctrl.Response.SetNoData(code)
 	ctrl.c.JSON(http.StatusOK, ctrl.Response)
 }
 
 // WithDataJSON parse with data to json and return
-func (ctrl *ApiContext[T]) WithDataJSON(code int64, data interface{}) {
+func (ctrl *ApiContext[T]) WithDataJSON(code resp.StatusCode, data interface{}) {
 	ctrl.Response.SetWithData(code, data)
 	ctrl.c.JSON(http.StatusOK, ctrl.Response)
 }

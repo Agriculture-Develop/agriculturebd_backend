@@ -3,8 +3,9 @@ package routes
 import (
 	"fmt"
 	"github.com/Agriculture-Develop/agriculturebd/api/config"
+	"github.com/Agriculture-Develop/agriculturebd/api/routes/Interface"
 	"github.com/Agriculture-Develop/agriculturebd/api/routes/admin"
-	"github.com/Agriculture-Develop/agriculturebd/api/routes/admin/Interface"
+	"github.com/Agriculture-Develop/agriculturebd/api/routes/auth"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/ioc"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
@@ -55,12 +56,12 @@ func registerRoute(r *gin.Engine) *gin.Engine {
 
 	// 注入控制层依赖
 	err := ioc.GetIocContainer().Invoke(func(
+		authCtrl Interface.IAuthCtrl,
 		userCtrl Interface.IUserCtrl,
 
 	) {
-
+		auth.Models(v1.Group("auth"), authCtrl)
 		admin.Models(v1.Group("admin"), userCtrl)
-		//product.RegisterProductRoutes(v1.Group("products"), productApi)
 	})
 	if err != nil {
 		panic(err)
