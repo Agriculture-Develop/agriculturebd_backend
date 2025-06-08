@@ -1,0 +1,76 @@
+package auth
+
+import (
+	"context"
+	"errors"
+	"github.com/Agriculture-Develop/agriculturebd/domain/auth/repository"
+	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/cache"
+	"go.uber.org/dig"
+	"time"
+
+	"github.com/Agriculture-Develop/agriculturebd/domain/auth/entity"
+
+	"github.com/Agriculture-Develop/agriculturebd/infrastructure/dao/model"
+
+	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/jwt"
+	"gorm.io/gorm"
+)
+
+type Repo struct {
+	dig.In
+
+	Db    *gorm.DB
+	Cache *cache.Cache
+}
+
+func NewAuthRepo(db *gorm.DB, cache *cache.Cache) repository.IAuthRepo {
+	return &Repo{
+		Db:    db,
+		Cache: cache,
+	}
+}
+
+func (r *Repo) GetUserByPhone(phone string) (*entity.User, error) {
+	var user model.User
+	if err := r.Db.Where("phone = ?", phone).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &entity.User{
+		ID:        user.ID,
+		Phone:     user.Phone,
+		Password:  user.Password,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}, nil
+}
+
+func (r *Repo) CreateUser(user *entity.User) error {
+	dbUser := &model.User{
+		Phone:    user.Phone,
+		Password: user.Password,
+	}
+
+	return r.Db.Create(dbUser).Error
+}
+
+func (r *Repo) SavePhoneCode(phone, code string) error {
+	key := "phone_code:" + phone
+	return r.Cache.Set(context.Background(), key, code, 5*time.Minute)
+}
+
+func (r *Repo) VerifyPhoneCode(phone, code string) bool {
+	key := "phone_code:" + phone
+	var savedCode string
+	if err := r.Cache.Get(context.Background(), key, &savedCode); err != nil {
+		return false
+	}
+	return savedCode == code
+}
+
+func (r *Repo) GenerateToken(userId uint) (string, error) {
+	return jwt.GenerateToken(userId)
+}

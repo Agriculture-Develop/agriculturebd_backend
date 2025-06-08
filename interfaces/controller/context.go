@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/Agriculture-Develop/agriculturebd/domain/common/respCode"
 	"github.com/Agriculture-Develop/agriculturebd/interfaces/vo/resp"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -74,13 +75,13 @@ func (ctrl *ApiContext[T]) GetPageAndCount() (page int, count int, err error) {
 }
 
 // NoDataJSON parse with Nodata to json and return
-func (ctrl *ApiContext[T]) NoDataJSON(code resp.StatusCode) {
+func (ctrl *ApiContext[T]) NoDataJSON(code respCode.StatusCode) {
 	ctrl.Response.SetNoData(code)
 	ctrl.c.JSON(http.StatusOK, ctrl.Response)
 }
 
 // WithDataJSON parse with data to json and return
-func (ctrl *ApiContext[T]) WithDataJSON(code resp.StatusCode, data interface{}) {
+func (ctrl *ApiContext[T]) WithDataJSON(code respCode.StatusCode, data interface{}) {
 	ctrl.Response.SetWithData(code, data)
 	ctrl.c.JSON(http.StatusOK, ctrl.Response)
 }

@@ -10,6 +10,6 @@ func Models(auth *gin.RouterGroup, authCtrl Interface.IAuthCtrl) {
 	auth.POST("/login/pwd", authCtrl.LoginByPassword) // 密码登录
 	auth.POST("/login/code", authCtrl.LoginByCode)    // 验证码登录
 	auth.POST("/register", authCtrl.Register)         // 注册
-	auth.POST("/send_code", authCtrl.SendPhoneCode)   // 发送验证码
+	auth.POST("/phone", authCtrl.SendPhoneCode)       // 发送验证码
 
 }

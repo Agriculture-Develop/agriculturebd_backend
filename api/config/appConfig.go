@@ -1,7 +1,6 @@
 package config
 
 import (
-	"flag"
 	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"go.uber.org/zap"
@@ -14,7 +13,7 @@ const appName = "conf"
 
 var (
 	conf       *Default
-	configPath string
+	configPath = "api/config/resources/app.yaml" // 默认值
 	once       sync.Once
 )
 
@@ -30,8 +29,8 @@ func (app *Default) InitConfig() {
 
 	vip := viper.New()
 	// 添加命令行参数修改的配置项
-	flag.StringVar(&configPath, "cp", "api/config/resources/app.yaml", "config path")
-	flag.Parse()
+	//flag.StringVar(&configPath, "cp", "api/config/resources/app.yaml", "config path")
+	//flag.Parse()
 
 	vip.SetConfigType("yaml")
 	vip.SetConfigFile(configPath)

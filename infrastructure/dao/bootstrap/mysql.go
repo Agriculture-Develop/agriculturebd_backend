@@ -1,4 +1,4 @@
-package database
+package bootstrap
 
 import (
 	"fmt"
@@ -11,11 +11,12 @@ import (
 
 var db *gorm.DB
 
-func GetDb() *gorm.DB {
+func NewDb() *gorm.DB {
+	initDb()
 	return db
 }
 
-func Init() {
+func initDb() {
 	var err error
 
 	sql := config.Get().Mysql

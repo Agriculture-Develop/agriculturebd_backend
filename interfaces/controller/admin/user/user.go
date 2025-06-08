@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/Agriculture-Develop/agriculturebd/api/routes/Interface"
 	"go.uber.org/dig"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,7 @@ type Ctrl struct {
 	dig.In
 }
 
-func NewUserCtrl() *Ctrl {
+func NewUserCtrl() Interface.IUserCtrl {
 	return new(Ctrl)
 }
 
