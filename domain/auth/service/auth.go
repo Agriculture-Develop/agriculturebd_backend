@@ -1,14 +1,19 @@
 package service
 
 import (
+	"errors"
+	"fmt"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/constant"
-	"github.com/Agriculture-Develop/agriculturebd/domain/auth/entity"
+	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/entity"
+	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/valobj"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/repository"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/service/vo"
 	"github.com/Agriculture-Develop/agriculturebd/domain/common/respCode"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/random"
 	"go.uber.org/dig"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type IAuthSvc interface {
@@ -28,10 +33,20 @@ func NewAuthSvc(r repository.IAuthRepo) IAuthSvc {
 }
 
 func (a *Svc) LoginByPassword(phone, password string) (respCode.StatusCode, vo.LoginSvcVo) {
+	// 0. 验证参数
+	if !entity.CheckPhone(phone) || !entity.CheckPassword(password) {
+		return respCode.InvalidParamsFormat, vo.LoginSvcVo{}
+	}
+
 	// 1. 获取用户信息
 	user, err := a.Repo.GetUserByPhone(phone)
 	if err != nil {
-		return respCode.UserNotExist, vo.LoginSvcVo{}
+		if errors.Is(err, gorm.ErrRecordNotFound) || user.ID == 0 {
+			return respCode.UserNotExist, vo.LoginSvcVo{}
+		} else {
+			zap.L().Error("CheckPassword fail", zap.Error(err))
+			return respCode.ServerBusy, vo.LoginSvcVo{}
+		}
 	}
 
 	// 2. 验证密码
@@ -52,6 +67,11 @@ func (a *Svc) LoginByPassword(phone, password string) (respCode.StatusCode, vo.L
 }
 
 func (a *Svc) LoginByCode(phone, code string) (respCode.StatusCode, vo.LoginSvcVo) {
+	// 0. 参数校验
+	if !entity.CheckPhone(phone) {
+		return respCode.InvalidParamsFormat, vo.LoginSvcVo{}
+	}
+
 	// 1. 验证验证码
 	if !a.Repo.VerifyPhoneCode(phone, code) {
 		return respCode.InvalidCaptcha, vo.LoginSvcVo{}
@@ -60,12 +80,18 @@ func (a *Svc) LoginByCode(phone, code string) (respCode.StatusCode, vo.LoginSvcV
 	// 2. 获取用户信息
 	user, err := a.Repo.GetUserByPhone(phone)
 	if err != nil {
-		return respCode.UserNotExist, vo.LoginSvcVo{}
+		if errors.Is(err, gorm.ErrRecordNotFound) || user.ID == 0 {
+			return respCode.UserNotExist, vo.LoginSvcVo{}
+		} else {
+			zap.L().Error("CheckPassword fail", zap.Error(err))
+			return respCode.ServerBusy, vo.LoginSvcVo{}
+		}
 	}
 
 	// 3. 生成token
 	token, err := a.Repo.GenerateToken(user.ID)
 	if err != nil {
+		zap.L().Error("GenerateToken fail", zap.Error(err))
 		return respCode.ServerBusy, vo.LoginSvcVo{}
 	}
 
@@ -76,6 +102,11 @@ func (a *Svc) LoginByCode(phone, code string) (respCode.StatusCode, vo.LoginSvcV
 }
 
 func (a *Svc) Register(password, phone, code string) respCode.StatusCode {
+	// 0. 参数校验
+	if !entity.CheckPhone(phone) || !entity.CheckPassword(password) {
+		return respCode.InvalidParamsFormat
+	}
+
 	// 1. 验证验证码
 	if !a.Repo.VerifyPhoneCode(phone, code) {
 		return respCode.InvalidCaptcha
@@ -93,10 +124,8 @@ func (a *Svc) Register(password, phone, code string) respCode.StatusCode {
 	}
 
 	// 4. 创建用户
-	user := &entity.User{
-		Phone:    phone,
-		Password: string(hashedPassword),
-	}
+	user := entity.NewUser(phone, string(hashedPassword), valobj.RoleUser)
+
 	if err = a.Repo.CreateUser(user); err != nil {
 		return respCode.ServerBusy
 	}
@@ -105,15 +134,21 @@ func (a *Svc) Register(password, phone, code string) respCode.StatusCode {
 }
 
 func (a *Svc) SendPhoneCode(phone string) respCode.StatusCode {
-	// 生成6位随机验证码
+	// 0. 参数校验
+	if !entity.CheckPhone(phone) {
+		return respCode.InvalidParamsFormat
+	}
+
+	// 1. 生成6位随机验证码
 	code := random.GetRandomNum(constant.CaptchaLens)
 
-	// 保存验证码
+	// 2. TODO: 调用短信服务发送验证码
+	fmt.Println("发送验证码:", code)
+
+	// 3. 保存验证码
 	if err := a.Repo.SavePhoneCode(phone, code); err != nil {
 		return respCode.ServerBusy
 	}
-
-	// TODO: 调用短信服务发送验证码
 
 	return respCode.Success
 }

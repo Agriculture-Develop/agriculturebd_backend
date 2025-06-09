@@ -4,11 +4,13 @@ import (
 	"github.com/Agriculture-Develop/agriculturebd/api/config"
 	"github.com/Agriculture-Develop/agriculturebd/api/routes"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/ioc"
+	"github.com/Agriculture-Develop/agriculturebd/infrastructure/logs"
 )
 
 func init() {
-	// 初始化配置
+
 	config.Init()
+	logs.Init()
 
 	// 初始化容器
 	ioc.Init()

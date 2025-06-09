@@ -7,7 +7,7 @@ import (
 type Response struct {
 	StatusCode respCode.StatusCode `json:"code"`
 	StatusMsg  string              `json:"msg,omitempty"` // omitempty如果字段为空则忽略显示
-	Data       interface{}         `json:"data"`
+	Data       interface{}         `json:"data,omitempty"`
 }
 
 // Msg returns the message of the resp

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/Agriculture-Develop/agriculturebd/domain/auth/entity"
+	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/entity"
 )
 
 type IAuthRepo interface {

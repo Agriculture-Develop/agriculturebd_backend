@@ -15,7 +15,7 @@ api:
 #------------------------------------------ 文件配置   -------------------------------------------------------
 log:
   level: "debug"
-  filename: ./data/logs/app.log
+  filename: ./doc/logs/app.log
   maxAge: 30
   maxBackups: 60
   maxSize: 200
@@ -35,8 +35,7 @@ auth:
    rateLimitInterval: 0.5s # 令牌投放速率
    rateLimitCap: 30  # 限流的最大容量
 
-
-# ----------------------------------------- Auth 配置   -------------------------------------------------------
+# ----------------------------------------- Mysql 配置   -------------------------------------------------------
 mysql:
   host: *host
   port: 3306
@@ -44,3 +43,12 @@ mysql:
   username: root
   password: 12cchheenn
   charset: utf8mb4
+
+
+# ----------------------------------------- 短信服务   -------------------------------------------------------
+phone:
+  accessKeyId:
+  accessKeySecret:
+  regionId: ""
+  expirationTime: 300s
+  sendInterval: 60s   # 发送间隔

@@ -18,6 +18,9 @@ CREATE TABLE users (
                        INDEX idx_role (role)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
+ALTER TABLE users MODIFY COLUMN phone VARCHAR(20) NOT NULL;
+ALTER TABLE users ADD UNIQUE INDEX idx_phone_unique (phone);
+
 -- 新闻表
 CREATE TABLE news (
                       id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '新闻ID',

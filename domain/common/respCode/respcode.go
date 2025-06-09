@@ -13,6 +13,7 @@ const (
 // 认证模块
 const (
 	InvalidParams StatusCode = 1001 + iota
+	InvalidParamsFormat
 	UserExist
 	UserNotExist
 	InvalidPassword
@@ -36,6 +37,7 @@ var Msg = map[StatusCode]string{
 
 	// 认证模块
 	InvalidParams:       "请求参数错误",
+	InvalidParamsFormat: "请求参数格式错误",
 	UserExist:           "用户已存在",
 	UserNotExist:        "用户不存在",
 	InvalidPassword:     "手机号或密码错误",
