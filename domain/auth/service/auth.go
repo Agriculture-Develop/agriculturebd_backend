@@ -21,6 +21,7 @@ type IAuthSvc interface {
 	LoginByCode(phone, code string) (respCode.StatusCode, vo.LoginSvcVo)
 	Register(password, phone, code string) respCode.StatusCode
 	SendPhoneCode(phone string) respCode.StatusCode
+	UpdatePassword(phone string, authCode string, newPassword string) respCode.StatusCode
 }
 
 type Svc struct {
@@ -147,6 +148,43 @@ func (a *Svc) SendPhoneCode(phone string) respCode.StatusCode {
 
 	// 3. 保存验证码
 	if err := a.Repo.SavePhoneCode(phone, code); err != nil {
+		return respCode.ServerBusy
+	}
+
+	return respCode.Success
+}
+
+func (s *Svc) UpdatePassword(phone string, authCode string, newPassword string) respCode.StatusCode {
+	// 0. 参数校验
+	if !entity.CheckPassword(newPassword) {
+		return respCode.InvalidParamsFormat
+	}
+
+	// 1. 获取用户信息
+	user, err := s.Repo.GetUserByPhone(phone)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return respCode.UserNotExist
+		}
+		zap.L().Error("GetUserById fail", zap.Error(err))
+		return respCode.ServerBusy
+	}
+
+	// 2. 验证码验证
+	if !s.Repo.VerifyPhoneCode(phone, authCode) {
+		return respCode.InvalidCaptcha
+	}
+
+	// 3. 加密新密码
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		zap.L().Error("GeneratePassword fail", zap.Error(err))
+		return respCode.ServerBusy
+	}
+
+	// 4. 更新密码
+	if err := s.Repo.UpdateNewPassword(user.ID, string(hashedPassword)); err != nil {
+		zap.L().Error("UpdateUser fail", zap.Error(err))
 		return respCode.ServerBusy
 	}
 

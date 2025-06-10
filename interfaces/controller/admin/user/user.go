@@ -2,75 +2,87 @@ package user
 
 import (
 	"github.com/Agriculture-Develop/agriculturebd/api/routes/Interface"
-	"go.uber.org/dig"
-
+	"github.com/Agriculture-Develop/agriculturebd/domain/common/respCode"
+	"github.com/Agriculture-Develop/agriculturebd/domain/user/service"
+	"github.com/Agriculture-Develop/agriculturebd/interfaces/controller"
+	userDto "github.com/Agriculture-Develop/agriculturebd/interfaces/dto/admin"
+	userVo "github.com/Agriculture-Develop/agriculturebd/interfaces/vo/admin"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/dig"
 )
 
 type Ctrl struct {
 	dig.In
+	Services service.IUserSvc
 }
 
-func NewUserCtrl() Interface.IUserCtrl {
-	return new(Ctrl)
+func NewUserCtrl(srv service.IUserSvc) Interface.IUserCtrl {
+	return &Ctrl{Services: srv}
 }
 
-// 获取用户列表
-func (api *Ctrl) GetUserList(c *gin.Context) {
-	//ctx := controller.NewAPiContext[struct{}](c)
+// GetUserList 获取用户列表
+func (c *Ctrl) GetUserList(ctx *gin.Context) {
+	apiCtx := controller.NewAPiContext[struct{}](ctx)
+	page, count, err := apiCtx.GetPageAndCount()
+	if err != nil {
+		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
+		return
+	}
 
-	//page, count, err := ctx.GetPageAndCount()
-	//if err != nil {
-	//	ctx.NoDataJSON(resp.CodeInvalidParams)
-	//	return
-	//}
+	code, users := c.Services.GetUserList(page, count)
+	if code != respCode.Success {
+		apiCtx.NoDataJSON(code)
+		return
+	}
 
-	//statusCode, users := api.Services.GetUserList(page, count)
-	//ctx.WithDataJSON(statusCode, resp.GetUserListResponse{UserList: users})
+	// 转换为接口层VO
+	userVos := make([]userVo.UserCtrlVo, 0, len(users))
+	for _, user := range users {
+		userVos = append(userVos, userVo.UserCtrlVo{
+			ID:         user.ID,
+			Phone:      user.Phone,
+			Nickname:   user.Nickname,
+			AvatarPath: user.AvatarPath,
+			Role:       user.Role,
+			Status:     user.Status,
+			CreatedAt:  user.CreatedAt,
+		})
+	}
+
+	apiCtx.WithDataJSON(code, userVo.UserListCtrlVo{
+		List:  userVos,
+		Total: int64(len(users)),
+	})
 }
 
-func (api *Ctrl) AddUser(c *gin.Context) {
-	//ctx := controller.NewAPiCtrl[resp.AddUserRequestData](c)
-	//
-	//if err := ctx.BindJSON(); err != nil {
-	//	ctx.NoDataJSON(apiCode.CodeInvalidParams)
-	//	return
-	//}
-	//
-	//statusCode := api.Services.AddUser(ctx.Request)
-	//ctx.WithDataJSON(statusCode, nil)
+// UpdateUserInfo 更新用户信息
+func (c *Ctrl) UpdateUserInfo(ctx *gin.Context) {
+	apiCtx := controller.NewAPiContext[userDto.UpdateUserInfoCtrlDto](ctx)
+	if err := apiCtx.BindJSON(); err != nil {
+		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
+		return
+	}
+
+	userId, err := apiCtx.GetUserIdByPath()
+	if err != nil {
+		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
+		return
+	}
+
+	code := c.Services.UpdateUserInfo(userId, apiCtx.Request.Nickname, apiCtx.Request.Role, apiCtx.Request.Status)
+	apiCtx.NoDataJSON(code)
 }
 
-func (api *Ctrl) ModifyUserInfo(c *gin.Context) {
-	//ctx := controller.NewAPiCtrl[struct{}](c)
-	//
-	//userId := ctx.GetUserID()
-	//rawData, err := c.GetRawData()
-	//if err != nil || len(rawData) == 0 {
-	//	ctx.NoDataJSON(apiCode.CodeInvalidParams)
-	//	return
-	//}
-	//
-	//statusCode, data := api.Services.ModifyInfo(rawData, userId)
-	//ctx.WithDataJSON(statusCode, resp.ModifyUserInfoResponse{User: data})
-}
+// DeleteUser 删除用户
+func (c *Ctrl) DeleteUser(ctx *gin.Context) {
+	apiCtx := controller.NewAPiContext[struct{}](ctx)
 
-func (api *Ctrl) ModifyPassword(c *gin.Context) {}
+	userId, err := apiCtx.GetUserIdByPath()
+	if err != nil {
+		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
+		return
+	}
 
-func (api *Ctrl) ModifyRole(c *gin.Context) {
-
-}
-
-func (api *Ctrl) DeleteUser(c *gin.Context) {
-	//ctx := controller.NewAPiCtrl[struct{}](c)
-	//
-	//idStr := c.Query("id")
-	//id, err := strconv.ParseInt(idStr, 10, 64)
-	//if err != nil || id <= 0 {
-	//	ctx.NoDataJSON(apiCode.CodeInvalidParams)
-	//	return
-	//}
-	//
-	//statusCode := api.Services.DeleteUser(id)
-	//ctx.NoDataJSON(statusCode)
+	code := c.Services.DeleteUser(userId)
+	apiCtx.NoDataJSON(code)
 }

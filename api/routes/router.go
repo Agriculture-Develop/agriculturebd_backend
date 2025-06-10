@@ -2,6 +2,8 @@ package routes
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/Agriculture-Develop/agriculturebd/api/config"
 	"github.com/Agriculture-Develop/agriculturebd/api/routes/Interface"
 	"github.com/Agriculture-Develop/agriculturebd/api/routes/admin"
@@ -9,23 +11,19 @@ import (
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/ioc"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
-var (
-	apiConf config.Api
-)
+var apiConf config.Api
 
 func Router() {
-
 	apiConf = config.Get().Api
 
 	// gin模式
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 
-	//TODO 待抽象
-	//r.Use(middleware.GinLogger(), middleware.GinRecovery(true), middleware.RateLimitMiddleware(), middleware.CORS())
+	// TODO 待抽象
+	// r.Use(middleware.GinLogger(), middleware.GinRecovery(true), middleware.RateLimitMiddleware(), middleware.CORS())
 
 	// 注册添加路由
 	registerRoute(r)
@@ -37,11 +35,9 @@ func Router() {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 }
 
 func registerRoute(r *gin.Engine) *gin.Engine {
-
 	v1 := r.Group(apiConf.BaseUrl) // v1版
 
 	// 测试
@@ -58,17 +54,16 @@ func registerRoute(r *gin.Engine) *gin.Engine {
 	err := ioc.GetIocContainer().Invoke(func(
 		authCtrl Interface.IAuthCtrl,
 		userCtrl Interface.IUserCtrl,
-
 	) {
-		auth.Models(v1.Group("auth"), authCtrl)
-		admin.Models(v1.Group("admin"), userCtrl)
+		auth.AuthModels(v1.Group("auth"), authCtrl)
+		admin.UserModels(v1.Group("admin"), userCtrl)
 	})
 	if err != nil {
 		panic(err)
 	}
 
 	// 获取静态文件
-	//r.StaticFS(baseUrl+"/avatar", http.Dir(config.Get().Api.StaticPath)) // 用户头像文件夹
+	// r.StaticFS(baseUrl+"/avatar", http.Dir(config.Get().Api.StaticPath)) // 用户头像文件夹
 
 	return r
 }

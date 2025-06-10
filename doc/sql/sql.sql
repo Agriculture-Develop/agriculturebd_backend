@@ -20,6 +20,9 @@ CREATE TABLE users (
 
 ALTER TABLE users MODIFY COLUMN phone VARCHAR(20) NOT NULL;
 ALTER TABLE users ADD UNIQUE INDEX idx_phone_unique (phone);
+ALTER TABLE users
+    MODIFY COLUMN status TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '用户状态(0启用 1禁用)';
+
 
 -- 新闻表
 CREATE TABLE news (

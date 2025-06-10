@@ -13,7 +13,7 @@ type User struct {
 	AvatarPath string `gorm:"type:varchar(255);default:'';comment:头像地址" json:"avatar_path"`
 	Nickname   string `gorm:"type:varchar(32);not null;comment:用户昵称" json:"nickname"`
 	Role       int    `gorm:"type:tinyint(1);default:0;comment:用户角色(0普通用户 1管理员 2超级管理员)" json:"role"`
-	Status     string `gorm:"type:varchar(10);default:'enabled';index;comment:用户状态" json:"status"`
+	Status     int    `gorm:"type:tinyint(1);default:0;comment:用户状态(0启用 1禁用)" json:"status"`
 	Phone      string `gorm:"type:varchar(20);not null;unique;comment:手机号" json:"phone"`
 
 	CreatedAt time.Time      `gorm:"autoCreateTime;comment:创建时间" json:"created_at"`

@@ -14,9 +14,8 @@ var (
 
 // RateLimitInit 令牌桶限流策略
 func RateLimitInit() {
-	Interval, _ := units.Duration(AuthConf.RateLimitInterval)
 	caps := config.Get().Auth.RateLimitCap
-	bucket = ratelimit.NewBucket(Interval, int64(caps))
+	bucket = ratelimit.NewBucket(units.Duration(AuthConf.RateLimitInterval), int64(caps))
 }
 
 func RateLimitMiddleware() func(c *gin.Context) {

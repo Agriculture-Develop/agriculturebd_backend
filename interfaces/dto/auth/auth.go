@@ -19,3 +19,9 @@ type RegisterCtrlDTO struct {
 type SendCodeCtrlDTO struct {
 	Phone string `json:"phone" binding:"required"`
 }
+
+type UpdatePasswordCtrlDto struct {
+	Phone       string `json:"phone" binding:"required"`
+	AuthCode    string `json:"auth_code" binding:"required,len=6,numeric"`
+	NewPassword string `json:"password" binding:"required"`
+}

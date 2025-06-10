@@ -30,6 +30,21 @@ func NewAuthRepo(db *gorm.DB, cache *cache.Cache) repository.IAuthRepo {
 	}
 }
 
+func (r *Repo) GetUserById(id uint) (*entity.User, error) {
+	var user model.User
+	if err := r.Db.First(&user, id).Error; err != nil {
+		return nil, err
+	}
+
+	return &entity.User{
+		ID:       user.ID,
+		Phone:    user.Phone,
+		Password: user.Password,
+		Role:     valobj.UserRole(user.Role),
+	}, nil
+
+}
+
 func (r *Repo) GetUserByPhone(phone string) (*entity.User, error) {
 	var user model.User
 	if err := r.Db.Where("phone = ?", phone).First(&user).Error; err != nil {
@@ -52,7 +67,7 @@ func (r *Repo) CreateUser(user *entity.User) error {
 		Phone:    user.Phone,
 		Password: user.Password,
 		Role:     user.Role.Int(),
-		Status:   user.Status.Desc(),
+		Status:   user.Status.Int(),
 	}
 
 	return r.Db.Create(dbUser).Error
@@ -74,4 +89,10 @@ func (r *Repo) VerifyPhoneCode(phone, code string) bool {
 
 func (r *Repo) GenerateToken(userId uint) (string, error) {
 	return jwt.GenerateToken(userId)
+}
+
+func (r *Repo) UpdateNewPassword(userId uint, newPassword string) error {
+	return r.Db.Model(&model.User{}).
+		Where("id = ?", userId).
+		Update("password", newPassword).Error
 }

@@ -47,8 +47,8 @@ func (ctrl *ApiContext[T]) BindQuery() error {
 	return ctrl.c.ShouldBindQuery(ctrl.Request)
 }
 
-// GetUserID get user id from context
-func (ctrl *ApiContext[T]) GetUserID() int64 {
+// GetUserIdByToken get user id from context
+func (ctrl *ApiContext[T]) GetUserIdByToken() int64 {
 	uid, exists := ctrl.c.Get(useridKey)
 	if !exists {
 		return 0
@@ -57,6 +57,12 @@ func (ctrl *ApiContext[T]) GetUserID() int64 {
 		return id
 	}
 	return 0
+}
+
+// GetUserIdByPath get user id from path
+func (ctrl *ApiContext[T]) GetUserIdByPath() (uint, error) {
+	id, err := strconv.ParseInt(ctrl.c.Param("id"), 10, 64)
+	return uint(id), err
 }
 
 // GetPageAndCount get page and count from query

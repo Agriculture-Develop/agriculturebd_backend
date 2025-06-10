@@ -73,3 +73,15 @@ func (api *Ctrl) SendPhoneCode(c *gin.Context) {
 	statusCode := api.Services.SendPhoneCode(ctx.Request.Phone)
 	ctx.NoDataJSON(statusCode)
 }
+
+// UpdateUserPassword 更新用户密码
+func (c *Ctrl) UpdateUserPassword(ctx *gin.Context) {
+	apiCtx := controller.NewAPiContext[dto.UpdatePasswordCtrlDto](ctx)
+	if err := apiCtx.BindJSON(); err != nil {
+		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
+		return
+	}
+
+	code := c.Services.UpdatePassword(apiCtx.Request.Phone, apiCtx.Request.AuthCode, apiCtx.Request.NewPassword)
+	apiCtx.NoDataJSON(code)
+}

@@ -2,8 +2,10 @@ package ioc
 
 import (
 	authSvc "github.com/Agriculture-Develop/agriculturebd/domain/auth/service"
+	"github.com/Agriculture-Develop/agriculturebd/domain/user/service"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/dao/bootstrap"
 	authRepo "github.com/Agriculture-Develop/agriculturebd/infrastructure/repository/auth"
+	"github.com/Agriculture-Develop/agriculturebd/infrastructure/repository/user"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/cache"
 	userCtrl "github.com/Agriculture-Develop/agriculturebd/interfaces/controller/admin/user"
 	authCtrl "github.com/Agriculture-Develop/agriculturebd/interfaces/controller/auth"
@@ -30,14 +32,15 @@ func BuildContainerList() {
 
 	// 注册仓储层实现
 	mustProvide(authRepo.NewAuthRepo)
+	mustProvide(user.NewUserRepo)
 
 	// 注册服务层实现
 	mustProvide(authSvc.NewAuthSvc)
+	mustProvide(service.NewUserSvc)
 
 	// 注册控制层实现
 	mustProvide(userCtrl.NewUserCtrl)
 	mustProvide(authCtrl.NewAuthCtrl)
-
 }
 
 func mustProvide(constructor interface{}) {
