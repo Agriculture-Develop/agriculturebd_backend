@@ -11,10 +11,11 @@ import (
 
 type Claims struct {
 	jwt.RegisteredClaims
-	ID uint
+	ID   uint
+	Role int
 }
 
-func GenerateToken(id uint) (string, error) {
+func GenerateToken(id uint, role int) (string, error) {
 	var (
 		conf      = config.Get().Auth
 		expiresAt = time.Now().Add(units.Duration(conf.JwtExpireTime))
@@ -28,7 +29,8 @@ func GenerateToken(id uint) (string, error) {
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			ID:        uuid.New().String(),
 		},
-		ID: id,
+		ID:   id,
+		Role: role,
 	}
 
 	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(conf.JwtSecret))
@@ -39,19 +41,19 @@ func GenerateToken(id uint) (string, error) {
 	return token, nil
 }
 
-func ParseToken(token string) (uint, error) {
-	var claims Claims
+func ParseToken(token string) (*Claims, error) {
+	claims := new(Claims)
 
-	t, err := jwt.ParseWithClaims(token, &claims, func(t *jwt.Token) (interface{}, error) {
+	t, err := jwt.ParseWithClaims(token, claims, func(t *jwt.Token) (interface{}, error) {
 		return []byte(config.Get().Auth.JwtSecret), nil
 	})
 	if err != nil {
-		return 0, err
+		return claims, err
 	}
 
 	if !t.Valid {
-		return 0, fmt.Errorf("invalid token")
+		return claims, fmt.Errorf("invalid token")
 	}
 
-	return claims.ID, nil
+	return claims, nil
 }

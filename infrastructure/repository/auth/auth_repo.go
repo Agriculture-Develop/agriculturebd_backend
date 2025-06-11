@@ -87,8 +87,8 @@ func (r *Repo) VerifyPhoneCode(phone, code string) bool {
 	return savedCode == code
 }
 
-func (r *Repo) GenerateToken(userId uint) (string, error) {
-	return jwt.GenerateToken(userId)
+func (r *Repo) GenerateToken(userId uint, role int) (string, error) {
+	return jwt.GenerateToken(userId, role)
 }
 
 func (r *Repo) UpdateNewPassword(userId uint, newPassword string) error {

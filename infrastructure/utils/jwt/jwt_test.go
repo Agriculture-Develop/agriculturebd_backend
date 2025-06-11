@@ -1,45 +1,42 @@
-package jwt_test
+package jwt
 
 import (
+	"fmt"
 	"github.com/Agriculture-Develop/agriculturebd/api/config"
-	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/jwt"
+	"github.com/agiledragon/gomonkey/v2"
+	"github.com/stretchr/testify/assert"
 	"testing"
-	"time"
 )
 
-// 初始化配置（根据你的 config 结构做适配）
-func init() {
-	// 模拟设置 config 值（建议换成 mock 或使用你自己的 config 初始化方法）
-	config.Init()
-}
-
 func TestGenerateAndParseToken(t *testing.T) {
-	id := int64(12345)
 
-	token, exp, err := jwt.GenerateToken(id)
-	if err != nil {
-		t.Fatalf("GenerateToken error: %v", err)
+	mockConf := &config.Default{
+		Auth: config.Auth{
+			JwtSecret:     "test-secret",
+			JwtExpireTime: "1h",
+			Issuer:        "xxx",
+		},
 	}
-	if token == "" {
-		t.Fatal("Expected non-empty token")
-	}
-	if exp == nil || time.Until(*exp) <= 0 {
-		t.Fatal("Expected valid expiration time")
-	}
+	patch := gomonkey.ApplyFunc(config.Get, func() *config.Default {
+		return mockConf
+	})
+	defer patch.Reset()
+	fmt.Println("mock config.Get() =>", config.Get()) // 如果是 nil，说明 patch 没生效
 
-	parsedID, err := jwt.ParseToken(token)
-	if err != nil {
-		t.Fatalf("ParseToken error: %v", err)
-	}
-	if parsedID != id {
-		t.Errorf("Expected ID %d, got %d", id, parsedID)
-	}
+	id := uint(999)
+
+	token, err := GenerateToken(id)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, token)
+
+	parsedID, err := ParseToken(token)
+	assert.NoError(t, err)
+	assert.Equal(t, id, parsedID)
 }
 
 func TestParseToken_Invalid(t *testing.T) {
-	invalidToken := "this.is.an.invalid.token"
-	_, err := jwt.ParseToken(invalidToken)
-	if err == nil {
-		t.Error("Expected error for invalid token, got nil")
-	}
+
+	invalidToken := "xxx.yyy.zzz"
+	_, err := ParseToken(invalidToken)
+	assert.Error(t, err)
 }

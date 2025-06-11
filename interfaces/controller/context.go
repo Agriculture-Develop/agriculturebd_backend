@@ -11,6 +11,7 @@ import (
 // Key
 const (
 	useridKey = "userId"
+	roleKey   = "role"
 	pageKey   = "page"
 	countKey  = "count"
 )
@@ -48,12 +49,23 @@ func (ctrl *ApiContext[T]) BindQuery() error {
 }
 
 // GetUserIdByToken get user id from context
-func (ctrl *ApiContext[T]) GetUserIdByToken() int64 {
+func (ctrl *ApiContext[T]) GetUserIdByToken() uint {
 	uid, exists := ctrl.c.Get(useridKey)
 	if !exists {
 		return 0
 	}
-	if id, ok := uid.(int64); ok {
+	if id, ok := uid.(uint); ok {
+		return id
+	}
+	return 0
+}
+
+func (ctrl *ApiContext[T]) GetUserIdByRole() int {
+	uid, exists := ctrl.c.Get(roleKey)
+	if !exists {
+		return 0
+	}
+	if id, ok := uid.(int); ok {
 		return id
 	}
 	return 0

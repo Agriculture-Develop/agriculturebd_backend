@@ -18,5 +18,5 @@ type IAuthRepo interface {
 	// 验证手机验证码
 	VerifyPhoneCode(phone, code string) bool
 	// 生成并保存token
-	GenerateToken(userId uint) (string, error)
+	GenerateToken(userId uint, role int) (string, error)
 }

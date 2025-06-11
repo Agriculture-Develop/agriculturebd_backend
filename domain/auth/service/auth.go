@@ -56,7 +56,7 @@ func (a *Svc) LoginByPassword(phone, password string) (respCode.StatusCode, vo.L
 	}
 
 	// 3. 生成token
-	token, err := a.Repo.GenerateToken(user.ID)
+	token, err := a.Repo.GenerateToken(user.ID, user.Role.Int())
 	if err != nil {
 		return respCode.ServerBusy, vo.LoginSvcVo{}
 	}
@@ -64,6 +64,7 @@ func (a *Svc) LoginByPassword(phone, password string) (respCode.StatusCode, vo.L
 	return respCode.Success, vo.LoginSvcVo{
 		Id:    user.ID,
 		Token: token,
+		Role:  user.Role.Int(),
 	}
 }
 
@@ -90,7 +91,7 @@ func (a *Svc) LoginByCode(phone, code string) (respCode.StatusCode, vo.LoginSvcV
 	}
 
 	// 3. 生成token
-	token, err := a.Repo.GenerateToken(user.ID)
+	token, err := a.Repo.GenerateToken(user.ID, user.Role.Int())
 	if err != nil {
 		zap.L().Error("GenerateToken fail", zap.Error(err))
 		return respCode.ServerBusy, vo.LoginSvcVo{}
@@ -99,6 +100,7 @@ func (a *Svc) LoginByCode(phone, code string) (respCode.StatusCode, vo.LoginSvcV
 	return respCode.Success, vo.LoginSvcVo{
 		Id:    user.ID,
 		Token: token,
+		Role:  user.Role.Int(),
 	}
 }
 

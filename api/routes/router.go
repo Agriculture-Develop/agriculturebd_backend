@@ -2,6 +2,7 @@ package routes
 
 import (
 	"fmt"
+	"github.com/Agriculture-Develop/agriculturebd/interfaces/controller/middleware"
 	"net/http"
 
 	"github.com/Agriculture-Develop/agriculturebd/api/config"
@@ -22,8 +23,7 @@ func Router() {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 
-	// TODO 待抽象
-	// r.Use(middleware.GinLogger(), middleware.GinRecovery(true), middleware.RateLimitMiddleware(), middleware.CORS())
+	r.Use(middleware.GinLogger(), middleware.GinRecovery(true), middleware.CORS())
 
 	// 注册添加路由
 	registerRoute(r)
