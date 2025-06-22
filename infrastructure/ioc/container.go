@@ -2,11 +2,14 @@ package ioc
 
 import (
 	authSvc "github.com/Agriculture-Develop/agriculturebd/domain/auth/service"
+	newsSvc "github.com/Agriculture-Develop/agriculturebd/domain/news/service"
 	"github.com/Agriculture-Develop/agriculturebd/domain/user/service"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/dao/bootstrap"
 	authRepo "github.com/Agriculture-Develop/agriculturebd/infrastructure/repository/auth"
-	"github.com/Agriculture-Develop/agriculturebd/infrastructure/repository/user"
+	newsRepo "github.com/Agriculture-Develop/agriculturebd/infrastructure/repository/news"
+	userRepo "github.com/Agriculture-Develop/agriculturebd/infrastructure/repository/user"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/cache"
+	newsCtrl "github.com/Agriculture-Develop/agriculturebd/interfaces/controller/admin/news"
 	userCtrl "github.com/Agriculture-Develop/agriculturebd/interfaces/controller/admin/user"
 	authCtrl "github.com/Agriculture-Develop/agriculturebd/interfaces/controller/auth"
 	"go.uber.org/dig"
@@ -32,15 +35,24 @@ func BuildContainerList() {
 
 	// 注册仓储层实现
 	mustProvide(authRepo.NewAuthRepo)
-	mustProvide(user.NewUserRepo)
+	mustProvide(userRepo.NewUserRepo)
+
+	mustProvide(newsRepo.NewNewsRepo)
+	mustProvide(newsRepo.NewNewsCategoryRepo)
 
 	// 注册服务层实现
 	mustProvide(authSvc.NewAuthSvc)
 	mustProvide(service.NewUserSvc)
 
+	mustProvide(newsSvc.NewNewsService)
+	mustProvide(newsSvc.NewNewsCategoryService)
+
 	// 注册控制层实现
 	mustProvide(userCtrl.NewUserCtrl)
 	mustProvide(authCtrl.NewAuthCtrl)
+
+	mustProvide(newsCtrl.NewCtrl)
+	mustProvide(newsCtrl.NewCategoryCtrl)
 }
 
 func mustProvide(constructor interface{}) {

@@ -54,9 +54,12 @@ func registerRoute(r *gin.Engine) *gin.Engine {
 	err := ioc.GetIocContainer().Invoke(func(
 		authCtrl Interface.IAuthCtrl,
 		userCtrl Interface.IUserCtrl,
+		newsCtrl Interface.INewsCtrl,
+		newsCategoryCtrl Interface.INewsCategoryCtrl,
 	) {
 		auth.AuthModels(v1.Group("auth"), authCtrl)
 		admin.UserModels(v1.Group("admin"), userCtrl)
+		admin.NewsModels(v1.Group("admin"), newsCtrl, newsCategoryCtrl)
 	})
 	if err != nil {
 		panic(err)

@@ -6,18 +6,6 @@ import (
 	"time"
 )
 
-type NewsStatus string
-
-const (
-	StatusDraft       NewsStatus = "draft"       // 未提交
-	StatusReviewing   NewsStatus = "reviewing"   // 审核中
-	StatusApproved    NewsStatus = "approved"    // 审核已通过
-	StatusRejected    NewsStatus = "rejected"    // 审核已驳回
-	StatusUnpublished NewsStatus = "unpublished" // 未发布
-	StatusPublished   NewsStatus = "published"   // 已发布
-	StatusOffline     NewsStatus = "offline"     // 已下线
-)
-
 type News struct {
 	ID       uint           `gorm:"primaryKey;autoIncrement;comment:新闻ID" json:"id"`
 	Title    string         `gorm:"type:varchar(255);not null;index;comment:新闻标题" json:"title"`
@@ -25,7 +13,7 @@ type News struct {
 	Keyword  datatypes.JSON `gorm:"type:json;comment:关键词列表" json:"keyword"`
 	Source   string         `gorm:"type:varchar(100);default:'';comment:新闻来源" json:"source"`
 	Content  string         `gorm:"type:longtext;comment:新闻内容" json:"content"`
-	Status   NewsStatus     `gorm:"type:varchar(20);default:'draft';index;comment:新闻状态" json:"status"`
+	Status   string         `gorm:"type:varchar(20);default:'draft';index;comment:新闻状态" json:"status"`
 	Comment  string         `gorm:"type:text;default:'';comment:审核批注" json:"comment"`
 	FilesURL datatypes.JSON `gorm:"type:json;comment:新闻图片地址组" json:"files_url"`
 	CoverURL string         `gorm:"type:varchar(512);default:'';comment:封面图地址" json:"cover_url"`

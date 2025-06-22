@@ -63,7 +63,7 @@ func (c *Ctrl) UpdateUserInfo(ctx *gin.Context) {
 		return
 	}
 
-	userId, err := apiCtx.GetUserIdByPath()
+	userId, err := apiCtx.GetIdByPath()
 	if err != nil {
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
 		return
@@ -77,7 +77,7 @@ func (c *Ctrl) UpdateUserInfo(ctx *gin.Context) {
 func (c *Ctrl) DeleteUser(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[struct{}](ctx)
 
-	userId, err := apiCtx.GetUserIdByPath()
+	userId, err := apiCtx.GetIdByPath()
 	if err != nil {
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
 		return

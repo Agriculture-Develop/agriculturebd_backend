@@ -1,9 +1,10 @@
-package model
+package entity
 
 import (
+	"time"
+
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
-	"time"
 )
 
 type NewsStatus string
