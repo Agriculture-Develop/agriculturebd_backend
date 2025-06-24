@@ -27,6 +27,8 @@ type INewsCtrl interface {
 	UpdateNews(ctx *gin.Context)
 	// 修改新闻状态
 	UpdateNewsStatus(ctx *gin.Context)
+	// 删除新闻
+	DeleteNews(ctx *gin.Context)
 }
 
 type INewsCategoryCtrl interface {

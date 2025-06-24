@@ -52,7 +52,7 @@ func (c *Ctrl) CreateNews(ctx *gin.Context) {
 // 获取新闻列表
 func (c *Ctrl) GetNewsList(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[ctrlDto.NewsListFilterDTO](ctx)
-	if err := apiCtx.BindQuery(); err != nil {
+	if err := apiCtx.BindJSON(); err != nil {
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
 		return
 	}
@@ -100,7 +100,6 @@ func (c *Ctrl) UpdateNews(ctx *gin.Context) {
 		Content:    apiCtx.Request.Content,
 		CoverURL:   apiCtx.Request.CoverURL,
 		FilesURL:   apiCtx.Request.FilesURL,
-		Status:     apiCtx.Request.Status,
 	}
 
 	code := c.Services.UpdateNews(id, dto)
@@ -118,5 +117,13 @@ func (c *Ctrl) UpdateNewsStatus(ctx *gin.Context) {
 		return
 	}
 	code := c.Services.UpdateNewsStatus(id, apiCtx.Request.Status)
+	apiCtx.NoDataJSON(code)
+}
+
+// 删除新闻
+func (c *Ctrl) DeleteNews(ctx *gin.Context) {
+	apiCtx := controller.NewAPiContext[struct{}](ctx)
+	id, _ := apiCtx.GetIdByPath()
+	code := c.Services.DeleteNews(id)
 	apiCtx.NoDataJSON(code)
 }

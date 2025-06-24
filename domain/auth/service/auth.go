@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/constant"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/entity"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/valobj"
@@ -27,11 +26,12 @@ type IAuthSvc interface {
 
 type Svc struct {
 	dig.In
-	Repo repository.IAuthRepo
+	Repo     repository.IAuthRepo
+	SmsUtils repository.ISMSUtils
 }
 
-func NewAuthSvc(r repository.IAuthRepo) IAuthSvc {
-	return &Svc{Repo: r}
+func NewAuthSvc(r repository.IAuthRepo, sms repository.ISMSUtils) IAuthSvc {
+	return &Svc{Repo: r, SmsUtils: sms}
 }
 
 func (a *Svc) LoginByPassword(phone, password string) (respCode.StatusCode, vo.LoginSvcVo) {
@@ -146,8 +146,12 @@ func (a *Svc) SendPhoneCode(phone string) respCode.StatusCode {
 	// 1. 生成6位随机验证码
 	code := random.GetRandomNum(constant.CaptchaLens)
 
-	// 2. TODO: 调用短信服务发送验证码
-	fmt.Println("发送验证码:", code)
+	// 2. 调用短信服务发送验证码
+	err := a.SmsUtils.SendCaptcha(phone, code)
+	if err != nil {
+		zap.L().Error("SendCaptcha fail", zap.Error(err))
+		return respCode.ServerBusy
+	}
 
 	// 3. 保存验证码
 	if err := a.Repo.SavePhoneCode(phone, code); err != nil {
@@ -157,14 +161,14 @@ func (a *Svc) SendPhoneCode(phone string) respCode.StatusCode {
 	return respCode.Success
 }
 
-func (s *Svc) UpdatePassword(phone string, authCode string, newPassword string) respCode.StatusCode {
+func (a *Svc) UpdatePassword(phone string, authCode string, newPassword string) respCode.StatusCode {
 	// 0. 参数校验
 	if !entity.CheckPassword(newPassword) {
 		return respCode.InvalidParamsFormat
 	}
 
 	// 1. 获取用户信息
-	user, err := s.Repo.GetUserByPhone(phone)
+	user, err := a.Repo.GetUserByPhone(phone)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return respCode.UserNotExist
@@ -174,7 +178,7 @@ func (s *Svc) UpdatePassword(phone string, authCode string, newPassword string) 
 	}
 
 	// 2. 验证码验证
-	if !s.Repo.VerifyPhoneCode(phone, authCode) {
+	if !a.Repo.VerifyPhoneCode(phone, authCode) {
 		return respCode.InvalidCaptcha
 	}
 
@@ -186,7 +190,7 @@ func (s *Svc) UpdatePassword(phone string, authCode string, newPassword string) 
 	}
 
 	// 4. 更新密码
-	if err := s.Repo.UpdateNewPassword(user.ID, string(hashedPassword)); err != nil {
+	if err := a.Repo.UpdateNewPassword(user.ID, string(hashedPassword)); err != nil {
 		zap.L().Error("UpdateUser fail", zap.Error(err))
 		return respCode.ServerBusy
 	}

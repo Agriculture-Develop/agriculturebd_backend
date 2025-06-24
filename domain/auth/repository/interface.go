@@ -20,3 +20,7 @@ type IAuthRepo interface {
 	// 生成并保存token
 	GenerateToken(userId uint, role int) (string, error)
 }
+
+type ISMSUtils interface {
+	SendCaptcha(phone string, code string) error
+}

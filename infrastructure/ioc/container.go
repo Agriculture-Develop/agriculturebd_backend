@@ -9,6 +9,7 @@ import (
 	newsRepo "github.com/Agriculture-Develop/agriculturebd/infrastructure/repository/news"
 	userRepo "github.com/Agriculture-Develop/agriculturebd/infrastructure/repository/user"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/cache"
+	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/sms"
 	newsCtrl "github.com/Agriculture-Develop/agriculturebd/interfaces/controller/admin/news"
 	userCtrl "github.com/Agriculture-Develop/agriculturebd/interfaces/controller/admin/user"
 	authCtrl "github.com/Agriculture-Develop/agriculturebd/interfaces/controller/auth"
@@ -30,6 +31,7 @@ func GetIocContainer() *dig.Container {
 // BuildContainerList IOC 注入列表
 func BuildContainerList() {
 	// 注册组件实现
+	mustProvide(sms.NewAliYunSms)
 	mustProvide(bootstrap.NewDb)
 	mustProvide(cache.NewCache)
 

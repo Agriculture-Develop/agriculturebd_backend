@@ -24,7 +24,6 @@ type NewsUpdateSvcDTO struct {
 	Content    string   `json:"content"`
 	CoverURL   string   `json:"cover_url"`
 	FilesURL   []string `json:"files_url"`
-	Status     string   `json:"status"`
 }
 
 // NewsListFilterSvcDTO 新闻列表筛选服务层DTO

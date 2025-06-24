@@ -21,7 +21,7 @@ func (r *CategoryRepo) Create(category *entity.NewsCategory) error {
 	dbCategory := &model.NewsCategories{
 		Name:        category.Name,
 		Description: category.Description,
-		SortOrder:   category.SortOrder,
+		//SortOrder:   category.SortOrder,
 	}
 	return r.Db.Create(dbCategory).Error
 }
@@ -30,7 +30,7 @@ func (r *CategoryRepo) Update(category *entity.NewsCategory) error {
 	return r.Db.Model(&model.NewsCategories{}).Where("id = ?", category.ID).Updates(map[string]interface{}{
 		"name":        category.Name,
 		"description": category.Description,
-		"sort_order":  category.SortOrder,
+		//"sort_order":  category.SortOrder,
 	}).Error
 }
 
@@ -47,9 +47,9 @@ func (r *CategoryRepo) GetByID(id uint) (*entity.NewsCategory, error) {
 		ID:          dbCategory.ID,
 		Name:        dbCategory.Name,
 		Description: dbCategory.Description,
-		SortOrder:   dbCategory.SortOrder,
-		CreatedAt:   dbCategory.CreatedAt,
-		UpdatedAt:   dbCategory.UpdatedAt,
+		//SortOrder:   dbCategory.SortOrder,
+		CreatedAt: dbCategory.CreatedAt,
+		UpdatedAt: dbCategory.UpdatedAt,
 	}, nil
 }
 
@@ -65,9 +65,9 @@ func (r *CategoryRepo) List() ([]*entity.NewsCategory, error) {
 			ID:          c.ID,
 			Name:        c.Name,
 			Description: c.Description,
-			SortOrder:   c.SortOrder,
-			CreatedAt:   c.CreatedAt,
-			UpdatedAt:   c.UpdatedAt,
+			//SortOrder:   c.SortOrder,
+			CreatedAt: c.CreatedAt,
+			UpdatedAt: c.UpdatedAt,
 		})
 	}
 

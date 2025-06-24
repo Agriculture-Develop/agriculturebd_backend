@@ -45,6 +45,11 @@ func (api *Ctrl) LoginByCode(c *gin.Context) {
 	}
 
 	statusCode, loginSvcVo := api.Services.LoginByCode(ctx.Request.Phone, ctx.Request.AuthCode)
+	if statusCode != respCode.Success {
+		ctx.NoDataJSON(statusCode)
+		return
+	}
+
 	ctx.WithDataJSON(statusCode, loginSvcVo)
 }
 

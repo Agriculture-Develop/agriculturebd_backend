@@ -33,7 +33,6 @@ func (c *CategoryCtrl) CreateCategory(ctx *gin.Context) {
 	dto := svcDto.CategoryCreateSvcDTO{
 		Name:        apiCtx.Request.Name,
 		Description: apiCtx.Request.Description,
-		SortOrder:   apiCtx.Request.SortOrder,
 	}
 
 	code := c.Services.CreateCategory(dto)

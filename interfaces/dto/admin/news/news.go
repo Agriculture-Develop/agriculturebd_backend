@@ -23,7 +23,6 @@ type NewsUpdateDTO struct {
 	Content    string   `json:"content"`
 	CoverURL   string   `json:"cover_url"`
 	FilesURL   []string `json:"files_url"`
-	Status     string   `json:"status"`
 }
 
 // NewsListFilterDTO 新闻列表筛选请求

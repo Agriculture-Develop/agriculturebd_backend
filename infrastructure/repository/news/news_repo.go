@@ -2,6 +2,7 @@ package news
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/Agriculture-Develop/agriculturebd/domain/news/entity"
 	"github.com/Agriculture-Develop/agriculturebd/domain/news/repository"
@@ -50,7 +51,6 @@ func (r *NewsRepo) Update(news *entity.News) error {
 		"keyword":     datatypes.JSON(keywordJSON),
 		"source":      news.Source,
 		"content":     news.Content,
-		"status":      string(news.Status),
 		"comment":     news.Comment,
 		"files_url":   datatypes.JSON(filesURLJSON),
 		"cover_url":   news.CoverURL,
@@ -64,7 +64,7 @@ func (r *NewsRepo) UpdateStatus(id uint, status string) error {
 
 func (r *NewsRepo) GetByID(id uint) (*entity.News, error) {
 	var dbNews model.News
-	if err := r.Db.Preload("User").First(&dbNews, id).Error; err != nil {
+	if err := r.Db.First(&dbNews, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -98,6 +98,7 @@ func (r *NewsRepo) List(filter repository.NewsListFilter) ([]*entity.News, int64
 	if filter.Status != "" {
 		query = query.Where("status = ?", filter.Status)
 	}
+	fmt.Println("filter.Author: ", filter.Author)
 	if filter.Author != "" {
 		query = query.Joins("JOIN users on users.id = news.user_id").
 			Where("users.nickname LIKE ?", "%"+filter.Author+"%")
@@ -108,7 +109,7 @@ func (r *NewsRepo) List(filter repository.NewsListFilter) ([]*entity.News, int64
 	}
 
 	offset := (filter.Page - 1) * filter.PageSize
-	if err := query.Preload("User").Order("created_at desc").Offset(offset).Limit(filter.PageSize).Find(&dbNews).Error; err != nil {
+	if err := query.Order("created_at desc").Offset(offset).Limit(filter.PageSize).Find(&dbNews).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -121,6 +122,7 @@ func (r *NewsRepo) List(filter repository.NewsListFilter) ([]*entity.News, int64
 			Keyword:     n.Keyword,
 			Source:      n.Source,
 			Status:      entity.NewsStatus(n.Status),
+			Content:     n.Content,
 			UserID:      n.UserID,
 			CategoryID:  n.CategoryID,
 			PublishedAt: n.PublishedAt,
@@ -129,4 +131,15 @@ func (r *NewsRepo) List(filter repository.NewsListFilter) ([]*entity.News, int64
 	}
 
 	return newsList, total, nil
+}
+
+func (r *NewsRepo) GetAuthorByID(id uint) (name string, err error) {
+	dbUser := new(model.User)
+	err = r.Db.Where("id = ?", id).First(dbUser).Error
+	return dbUser.Nickname, err
+}
+
+// 删除新闻
+func (r *NewsRepo) Delete(id uint) error {
+	return r.Db.Delete(&model.News{}, id).Error
 }

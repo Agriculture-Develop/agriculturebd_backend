@@ -8,6 +8,8 @@ type INewsRepo interface {
 	UpdateStatus(id uint, status string) error
 	GetByID(id uint) (*entity.News, error)
 	List(filter NewsListFilter) ([]*entity.News, int64, error)
+	GetAuthorByID(id uint) (name string, err error)
+	Delete(id uint) error
 }
 
 type NewsListFilter struct {

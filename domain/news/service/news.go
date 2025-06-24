@@ -20,6 +20,7 @@ type INewsSvc interface {
 	UpdateNewsStatus(id uint, status string) respCode.StatusCode
 	GetNewsDetail(id uint) (respCode.StatusCode, *vo.NewsDetailSvcVO)
 	ListNews(filter dto.NewsListFilterSvcDTO) (respCode.StatusCode, *vo.NewsListSvcVO)
+	DeleteNews(id uint) respCode.StatusCode
 }
 
 type NewsSvc struct {
@@ -130,9 +131,6 @@ func (s *NewsSvc) UpdateNews(id uint, dto dto.NewsUpdateSvcDTO) respCode.StatusC
 	if dto.CoverURL != "" {
 		news.CoverURL = dto.CoverURL
 	}
-	if dto.Status != "" {
-		news.Status = entity.NewsStatus(dto.Status)
-	}
 
 	// 4. 更新关键词
 	if dto.Keyword != nil {
@@ -225,6 +223,9 @@ func (s *NewsSvc) GetNewsDetail(id uint) (respCode.StatusCode, *vo.NewsDetailSvc
 		}
 	}
 
+	// 获取用户作者信息
+	author, err := s.NewsRepo.GetAuthorByID(news.UserID)
+
 	// 4. 解析文件URL
 	var filesURL []string
 	if news.FilesURL != nil {
@@ -247,7 +248,7 @@ func (s *NewsSvc) GetNewsDetail(id uint) (respCode.StatusCode, *vo.NewsDetailSvc
 		CoverURL:   news.CoverURL,
 		FilesURL:   filesURL,
 		Status:     string(news.Status),
-		Author:     "", // TODO: 根据UserID获取用户信息
+		Author:     author,
 		CreatedAt:  news.CreatedAt,
 		UpdatedAt:  news.UpdatedAt,
 	}
@@ -306,6 +307,10 @@ func (s *NewsSvc) ListNews(filter dto.NewsListFilterSvcDTO) (respCode.StatusCode
 			}
 		}
 
+		// 获取用户作者信息
+		var author string
+		author, err = s.NewsRepo.GetAuthorByID(news.UserID)
+
 		// 解析文件URL
 		var filesURL []string
 		if news.FilesURL != nil {
@@ -327,7 +332,7 @@ func (s *NewsSvc) ListNews(filter dto.NewsListFilterSvcDTO) (respCode.StatusCode
 			CoverURL:   news.CoverURL,
 			FilesURL:   filesURL,
 			Status:     string(news.Status),
-			Author:     "", // TODO: 根据UserID获取用户信息
+			Author:     author,
 			CreatedAt:  news.CreatedAt,
 			UpdatedAt:  news.UpdatedAt,
 		}
@@ -341,4 +346,15 @@ func (s *NewsSvc) ListNews(filter dto.NewsListFilterSvcDTO) (respCode.StatusCode
 	}
 
 	return respCode.Success, result
+}
+
+// 删除新闻
+func (s *NewsSvc) DeleteNews(id uint) respCode.StatusCode {
+	err := s.NewsRepo.Delete(id)
+	if err != nil {
+		zap.L().Error("DeleteNews fail", zap.Error(err))
+		return respCode.ServerBusy
+	}
+
+	return respCode.Success
 }

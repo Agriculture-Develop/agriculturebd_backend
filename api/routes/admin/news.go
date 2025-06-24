@@ -14,6 +14,7 @@ func NewsModels(r *gin.RouterGroup, ctrl Interface.INewsCtrl, catCtrl Interface.
 		newsGroup.GET("/:id", ctrl.GetNewsDetail)
 		newsGroup.PUT("/:id", ctrl.UpdateNews)
 		newsGroup.PUT("status/:id", ctrl.UpdateNewsStatus)
+		newsGroup.DELETE("/:id", ctrl.DeleteNews)
 
 		// 分类相关
 		newsGroup.POST("categories", catCtrl.CreateCategory)

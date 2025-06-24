@@ -4,7 +4,6 @@ package dto
 type CategoryCreateSvcDTO struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	SortOrder   uint   `json:"sort_order"`
 }
 
 // CategoryUpdateSvcDTO 更新分类服务层DTO

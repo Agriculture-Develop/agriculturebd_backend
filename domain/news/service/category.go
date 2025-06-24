@@ -39,7 +39,7 @@ func (s *NewsCategorySvc) CreateCategory(dto dto.CategoryCreateSvcDTO) respCode.
 	category := &entity.NewsCategory{
 		Name:        dto.Name,
 		Description: dto.Description,
-		SortOrder:   dto.SortOrder,
+		//SortOrder:   dto.SortOrder,
 	}
 	if err := s.CategoryRepo.Create(category); err != nil {
 		zap.L().Error("CreateCategory fail", zap.Error(err))

@@ -4,7 +4,6 @@ package news
 type CategoryCreateDTO struct {
 	Name        string `json:"name" binding:"required"`
 	Description string `json:"description"`
-	SortOrder   uint   `json:"sort_order"`
 }
 
 // CategoryUpdateDTO 更新分类请求
