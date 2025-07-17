@@ -1,0 +1,61 @@
+#生成结构体
+#go install github.com/Icemap/yaml2go-cli@latest
+#yaml2go-cli -i api/config/resources/app.yaml -o api/config/generation.go  -p config
+
+# 定义伪常量
+host: &host 127.0.0.1
+
+api:
+  baseUrl: api/v1
+  host: *host # 本地环境启动
+  post: 28080
+  staticPath: ./doc/file
+
+
+#------------------------------------------ 文件配置   -------------------------------------------------------
+log:
+  level: "debug"
+  filename: ./doc/logs/app.log
+  maxAge: 30
+  maxBackups: 60
+  maxSize: 200
+  mode: develop
+  #prod 生产环境（production environment）模式
+
+
+# ----------------------------------------- Auth 配置   -------------------------------------------------------
+auth:
+  jwtExpireTime: 60m
+  jwtSecret: agriculture_access
+  issuer: zty
+  isUserExpireTime: 30m
+  roleCacheExpireTime: 168h
+  psdErrorLimit: 10   # 密码锁定次数
+  psdErrorLockTime: 15m
+  rateLimitInterval: 0.5s # 令牌投放速率
+  rateLimitCap: 30  # 限流的最大容量
+
+# ----------------------------------------- Mysql 配置   -------------------------------------------------------
+mysql:
+  host: *host
+  port: 3306
+  dbname: agriculture
+  username:
+  password:
+  charset: utf8mb4
+
+
+# ----------------------------------------- 短信服务   -------------------------------------------------------
+phone:
+  accessKeyId:
+  accessKeySecret:
+  templateCode: SMS_478440193
+  endpoint: "dysmsapi.aliyuncs.com"
+  signName: "逐梦编程"
+  expirationTime: 300s
+  sendInterval: 60s   # 发送间隔
+
+# ----------------------------------------- 文件配置   -------------------------------------------------------
+file:
+  path: ./doc/file
+  maxSize: 2 # 2mb

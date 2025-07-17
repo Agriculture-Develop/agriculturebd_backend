@@ -9,7 +9,7 @@ api:
   baseUrl: api/v1
   host: *host # 本地环境启动
   post: 28080
-  staticPath: ./doc/file/avatar
+  staticPath: ./doc/file
 
 
 #------------------------------------------ 文件配置   -------------------------------------------------------
@@ -40,8 +40,8 @@ mysql:
   host: *host
   port: 3306
   dbname: agriculture
-  username: root
-  password: 12cchheenn
+  username:
+  password:
   charset: utf8mb4
 
 
@@ -49,6 +49,13 @@ mysql:
 phone:
   accessKeyId:
   accessKeySecret:
-  regionId: ""
+  templateCode: SMS_478440193
+  endpoint: "dysmsapi.aliyuncs.com"
+  signName: "逐梦编程"
   expirationTime: 300s
   sendInterval: 60s   # 发送间隔
+
+# ----------------------------------------- 文件配置   -------------------------------------------------------
+file:
+    path: ./doc/file
+    maxSize: 2 # 2mb

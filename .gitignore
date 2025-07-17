@@ -5,7 +5,7 @@ go.*
 */*.log
 */*.json
 
-./api/config/resources/
-./doc/file/
-/api/config/resources/app.yaml
-/api/config/resources/app_prod.yaml
+/doc/file/*
+/doc/logs/*
+
+/api/config/resources/app_secret.yaml
