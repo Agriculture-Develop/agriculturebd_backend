@@ -3,6 +3,7 @@ package news
 import (
 	"github.com/Agriculture-Develop/agriculturebd/api/routes/Interface"
 	"github.com/Agriculture-Develop/agriculturebd/domain/common/respCode"
+	upload "github.com/Agriculture-Develop/agriculturebd/domain/common/service"
 	"github.com/Agriculture-Develop/agriculturebd/domain/news/service"
 	svcDto "github.com/Agriculture-Develop/agriculturebd/domain/news/service/dto"
 	"github.com/Agriculture-Develop/agriculturebd/interfaces/controller"
@@ -14,20 +15,36 @@ import (
 
 type Ctrl struct {
 	dig.In
-	Services service.INewsSvc
+	Services  service.INewsSvc
+	UploadSvc upload.IUploadSvc
 }
 
-func NewCtrl(srv service.INewsSvc) Interface.INewsCtrl {
+func NewCtrl(srv service.INewsSvc, upload upload.IUploadSvc) Interface.INewsCtrl {
 	return &Ctrl{
-		Services: srv,
+		Services:  srv,
+		UploadSvc: upload,
 	}
 }
 
 // 提交新闻
 func (c *Ctrl) CreateNews(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[ctrlDto.NewsCreateDTO](ctx)
-	if err := apiCtx.BindJSON(); err != nil {
+	if err := apiCtx.BindForm(); err != nil {
+
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
+		return
+	}
+
+	// 文件校验与上传
+	coverUrl, err := c.UploadSvc.UploadFile(apiCtx.Request.Cover, "news")
+	if err != nil {
+		apiCtx.NoDataJSON(respCode.InvalidParams, err.Error())
+		return
+	}
+
+	filesUrl, err := c.UploadSvc.UploadFiles(apiCtx.Request.Files, "news")
+	if err != nil {
+		apiCtx.NoDataJSON(respCode.InvalidParams, err.Error())
 		return
 	}
 
@@ -39,8 +56,9 @@ func (c *Ctrl) CreateNews(ctx *gin.Context) {
 		Keyword:    apiCtx.Request.Keyword,
 		Source:     apiCtx.Request.Source,
 		Content:    apiCtx.Request.Content,
-		CoverURL:   apiCtx.Request.CoverURL,
-		FilesURL:   apiCtx.Request.FilesURL,
+		Type:       apiCtx.Request.Type,
+		CoverURL:   coverUrl,
+		FilesURL:   filesUrl,
 		Status:     apiCtx.Request.Status,
 		UserID:     apiCtx.GetUserIdByToken(),
 	}

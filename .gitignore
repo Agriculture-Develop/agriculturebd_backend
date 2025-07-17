@@ -5,4 +5,5 @@ go.*
 */*.log
 */*.json
 
-./api/config/resources/*
+./api/config/resources/
+./doc/file/

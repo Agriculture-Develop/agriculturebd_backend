@@ -41,7 +41,6 @@ func registerRoute(r *gin.Engine) *gin.Engine {
 	v1 := r.Group(apiConf.BaseUrl) // v1版
 
 	// 测试
-
 	pprof.Register(r)
 
 	v1.GET("/ping", func(c *gin.Context) {
@@ -66,7 +65,7 @@ func registerRoute(r *gin.Engine) *gin.Engine {
 	}
 
 	// 获取静态文件
-	// r.StaticFS(baseUrl+"/avatar", http.Dir(config.Get().Api.StaticPath)) // 用户头像文件夹
+	r.StaticFS(apiConf.BaseUrl+"/files", http.Dir(config.Get().Api.StaticPath))
 
 	return r
 }

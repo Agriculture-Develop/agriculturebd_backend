@@ -1,63 +1,70 @@
 package config
 
+// Default
+type Default struct {
+	Host  string `yaml:"host"`
+	Api   Api    `yaml:"api"`
+	Log   Log    `yaml:"log"`
+	Auth  Auth   `yaml:"auth"`
+	Mysql Mysql  `yaml:"mysql"`
+	Phone Phone  `yaml:"phone"`
+	File  File   `yaml:"file"`
+}
+
 // Api
 type Api struct {
-	Post       int    `yaml:"post"`
-	StaticPath string `yaml:"staticPath"`
 	BaseUrl    string `yaml:"baseUrl"`
 	Host       string `yaml:"host"`
+	Post       int    `yaml:"post"`
+	StaticPath string `yaml:"staticPath"`
 }
 
 // Log
 type Log struct {
-	Level      string `yaml:"level"`
-	Filename   string `yaml:"filename"`
 	MaxAge     int    `yaml:"maxAge"`
 	MaxBackups int    `yaml:"maxBackups"`
 	MaxSize    int    `yaml:"maxSize"`
 	Mode       string `yaml:"mode"`
+	Level      string `yaml:"level"`
+	Filename   string `yaml:"filename"`
 }
 
 // Auth
 type Auth struct {
-	JwtSecret           string `yaml:"jwtSecret"`
-	Issuer              string `yaml:"issuer"`
-	IsUserExpireTime    string `yaml:"isUserExpireTime"`
-	RoleCacheExpireTime string `yaml:"roleCacheExpireTime"`
 	PsdErrorLockTime    string `yaml:"psdErrorLockTime"`
+	RateLimitCap        int    `yaml:"rateLimitCap"`
 	JwtExpireTime       string `yaml:"jwtExpireTime"`
+	JwtSecret           string `yaml:"jwtSecret"`
+	RoleCacheExpireTime string `yaml:"roleCacheExpireTime"`
 	PsdErrorLimit       int    `yaml:"psdErrorLimit"`
 	RateLimitInterval   string `yaml:"rateLimitInterval"`
-	RateLimitCap        int    `yaml:"rateLimitCap"`
+	Issuer              string `yaml:"issuer"`
+	IsUserExpireTime    string `yaml:"isUserExpireTime"`
 }
 
 // Mysql
 type Mysql struct {
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
 	Charset  string `yaml:"charset"`
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
 	Dbname   string `yaml:"dbname"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 }
 
 // Phone
 type Phone struct {
-	TemplateCode    string `yaml:"templateCode"`
 	Endpoint        string `yaml:"endpoint"`
 	SignName        string `yaml:"signName"`
 	ExpirationTime  string `yaml:"expirationTime"`
 	SendInterval    string `yaml:"sendInterval"`
 	AccessKeyId     string `yaml:"accessKeyId"`
 	AccessKeySecret string `yaml:"accessKeySecret"`
+	TemplateCode    string `yaml:"templateCode"`
 }
 
-// Default
-type Default struct {
-	Api   Api    `yaml:"api"`
-	Log   Log    `yaml:"log"`
-	Auth  Auth   `yaml:"auth"`
-	Mysql Mysql  `yaml:"mysql"`
-	Phone Phone  `yaml:"phone"`
-	Host  string `yaml:"host"`
+// File
+type File struct {
+	Path    string `yaml:"path"`
+	MaxSize int64  `yaml:"maxSize"`
 }

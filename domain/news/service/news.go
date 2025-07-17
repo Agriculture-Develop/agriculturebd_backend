@@ -38,12 +38,12 @@ func NewNewsService(newsRepo repository.INewsRepo, categoryRepo repository.INews
 
 // CreateNews 创建新闻
 func (s *NewsSvc) CreateNews(dto dto.NewsCreateSvcDTO) respCode.StatusCode {
-	// 1. 参数校验
-	if dto.Title == "" || dto.Content == "" {
-		return respCode.InvalidParamsFormat
+	// 0. 校验状态参数
+	if dto.Status != string(entity.StatusDraft) && dto.Status != string(entity.StatusReviewing) {
+		return respCode.InvalidParams
 	}
 
-	// 2. 检查分类是否存在
+	// 1. 检查分类是否存在
 	if _, err := s.CategoryRepo.GetByID(dto.CategoryID); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return respCode.RecordNotFound
@@ -52,21 +52,21 @@ func (s *NewsSvc) CreateNews(dto dto.NewsCreateSvcDTO) respCode.StatusCode {
 		return respCode.ServerBusy
 	}
 
-	// 3. 转换关键词为JSON
+	// 2. 转换关键词为JSON
 	keywordJSON, err := json.Marshal(dto.Keyword)
 	if err != nil {
 		zap.L().Error("Marshal keyword fail", zap.Error(err))
 		return respCode.ServerBusy
 	}
 
-	// 4. 转换文件URL为JSON
+	// 3. 转换URL为JSON
 	filesURLJSON, err := json.Marshal(dto.FilesURL)
 	if err != nil {
 		zap.L().Error("Marshal files_url fail", zap.Error(err))
 		return respCode.ServerBusy
 	}
 
-	// 5. 创建新闻实体
+	// 4. 创建新闻实体
 	news := &entity.News{
 		Title:      dto.Title,
 		CategoryID: dto.CategoryID,
@@ -74,13 +74,14 @@ func (s *NewsSvc) CreateNews(dto dto.NewsCreateSvcDTO) respCode.StatusCode {
 		Keyword:    datatypes.JSON(keywordJSON),
 		Source:     dto.Source,
 		Content:    dto.Content,
+		Type:       entity.NewsType(dto.Type),
 		Status:     entity.NewsStatus(dto.Status),
-		FilesURL:   datatypes.JSON(filesURLJSON),
+		FilesURL:   filesURLJSON,
 		CoverURL:   dto.CoverURL,
 		UserID:     dto.UserID,
 	}
 
-	// 6. 保存到数据库
+	// 5. 保存到数据库
 	if err := s.NewsRepo.Create(news); err != nil {
 		zap.L().Error("CreateNews fail", zap.Error(err))
 		return respCode.ServerBusy

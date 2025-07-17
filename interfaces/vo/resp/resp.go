@@ -7,7 +7,7 @@ import (
 type Response struct {
 	StatusCode respCode.StatusCode `json:"code"`
 	StatusMsg  string              `json:"msg,omitempty"` // omitempty如果字段为空则忽略显示
-	Data       interface{}         `json:"data,omitempty"`
+	Data       any                 `json:"data,omitempty"`
 }
 
 // Msg returns the message of the resp
@@ -19,13 +19,19 @@ func (r *Response) Msg() string {
 }
 
 // SetNoData prepares the response without data
-func (r *Response) SetNoData(code respCode.StatusCode) {
+func (r *Response) SetNoData(code respCode.StatusCode, msg ...string) {
 	r.StatusCode = code
+
+	if len(msg) > 0 && msg[0] != "" {
+		r.StatusMsg = msg[0]
+		return
+	}
 	r.StatusMsg = r.Msg()
+	return
 }
 
 // SetWithData prepares the response with data
-func (r *Response) SetWithData(code respCode.StatusCode, data interface{}) {
+func (r *Response) SetWithData(code respCode.StatusCode, data any) {
 	r.StatusCode = code
 	r.StatusMsg = r.Msg()
 	r.Data = data

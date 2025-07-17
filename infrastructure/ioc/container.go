@@ -2,8 +2,9 @@ package ioc
 
 import (
 	authSvc "github.com/Agriculture-Develop/agriculturebd/domain/auth/service"
+	commonSvc "github.com/Agriculture-Develop/agriculturebd/domain/common/service"
 	newsSvc "github.com/Agriculture-Develop/agriculturebd/domain/news/service"
-	"github.com/Agriculture-Develop/agriculturebd/domain/user/service"
+	userSvc "github.com/Agriculture-Develop/agriculturebd/domain/user/service"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/dao/bootstrap"
 	authRepo "github.com/Agriculture-Develop/agriculturebd/infrastructure/repository/auth"
 	newsRepo "github.com/Agriculture-Develop/agriculturebd/infrastructure/repository/news"
@@ -43,8 +44,10 @@ func BuildContainerList() {
 	mustProvide(newsRepo.NewNewsCategoryRepo)
 
 	// 注册服务层实现
+	mustProvide(commonSvc.NewUploadSvc)
+
 	mustProvide(authSvc.NewAuthSvc)
-	mustProvide(service.NewUserSvc)
+	mustProvide(userSvc.NewUserSvc)
 
 	mustProvide(newsSvc.NewNewsService)
 	mustProvide(newsSvc.NewNewsCategoryService)

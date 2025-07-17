@@ -48,6 +48,11 @@ func (ctrl *ApiContext[T]) BindQuery() error {
 	return ctrl.c.ShouldBindQuery(ctrl.Request)
 }
 
+// BindQuery bind query to request
+func (ctrl *ApiContext[T]) BindForm() error {
+	return ctrl.c.ShouldBind(ctrl.Request)
+}
+
 // GetUserIdByToken get user id from context
 func (ctrl *ApiContext[T]) GetUserIdByToken() uint {
 	uid, exists := ctrl.c.Get(useridKey)
@@ -93,8 +98,8 @@ func (ctrl *ApiContext[T]) GetPageAndCount() (page int, count int, err error) {
 }
 
 // NoDataJSON parse with Nodata to json and return
-func (ctrl *ApiContext[T]) NoDataJSON(code respCode.StatusCode) {
-	ctrl.Response.SetNoData(code)
+func (ctrl *ApiContext[T]) NoDataJSON(code respCode.StatusCode, msg ...string) {
+	ctrl.Response.SetNoData(code, msg...)
 	ctrl.c.JSON(http.StatusOK, ctrl.Response)
 }
 

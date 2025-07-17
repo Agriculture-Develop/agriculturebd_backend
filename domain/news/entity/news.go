@@ -8,6 +8,7 @@ import (
 )
 
 type NewsStatus string
+type NewsType string
 
 const (
 	StatusDraft       NewsStatus = "draft"       // 未提交
@@ -19,10 +20,16 @@ const (
 	StatusOffline     NewsStatus = "offline"     // 已下线
 )
 
+const (
+	TypeNews   NewsType = "news"   // 新闻
+	TypePolicy NewsType = "policy" // 政策
+)
+
 type News struct {
 	ID       uint           `gorm:"primaryKey;autoIncrement;comment:新闻ID" json:"id"`
 	Title    string         `gorm:"type:varchar(255);not null;index;comment:新闻标题" json:"title"`
 	Abstract string         `gorm:"type:text;comment:新闻摘要" json:"abstract"`
+	Type     NewsType       `gorm:"type:varchar(50);not null;uniqueIndex;comment:新闻类型" json:"type"`
 	Keyword  datatypes.JSON `gorm:"type:json;comment:关键词列表" json:"keyword"`
 	Source   string         `gorm:"type:varchar(100);default:'';comment:新闻来源" json:"source"`
 	Content  string         `gorm:"type:longtext;comment:新闻内容" json:"content"`
