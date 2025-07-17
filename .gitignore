@@ -7,3 +7,5 @@ go.*
 
 ./api/config/resources/
 ./doc/file/
+/api/config/resources/app.yaml
+/api/config/resources/app_prod.yaml
