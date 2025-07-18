@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/upload"
 	"mime/multipart"
-	"os"
 )
 
 type IUploadSvc interface {
 	UploadFile(file *multipart.FileHeader, types string) (string, error)
 	UploadFiles(files []*multipart.FileHeader, types string) ([]string, error)
-	DeleteFile(filePath, types string) error
+	DeleteFile(fileName, types string) error
 }
 
 type UploadSvc struct {
@@ -54,14 +53,6 @@ func (s *UploadSvc) UploadFiles(files []*multipart.FileHeader, types string) ([]
 	return paths, nil
 }
 
-func (s *UploadSvc) DeleteFile(filePath, types string) error {
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return fmt.Errorf("文件不存在：%s", filePath)
-	}
-
-	if err := os.Remove(filePath); err != nil {
-		return fmt.Errorf("删除文件失败：%w", err)
-	}
-
-	return nil
+func (s *UploadSvc) DeleteFile(fileName, types string) error {
+	return upload.DeleteFile(fileName, types)
 }

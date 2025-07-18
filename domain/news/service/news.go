@@ -8,6 +8,7 @@ import (
 	"github.com/Agriculture-Develop/agriculturebd/domain/news/repository"
 	"github.com/Agriculture-Develop/agriculturebd/domain/news/service/dto"
 	"github.com/Agriculture-Develop/agriculturebd/domain/news/service/vo"
+	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/upload"
 	"go.uber.org/dig"
 	"go.uber.org/zap"
 	"gorm.io/datatypes"
@@ -92,6 +93,11 @@ func (s *NewsSvc) CreateNews(dto dto.NewsCreateSvcDTO) respCode.StatusCode {
 
 // UpdateNews 更新新闻
 func (s *NewsSvc) UpdateNews(id uint, dto dto.NewsUpdateSvcDTO) respCode.StatusCode {
+	// 0. 校验状态参数
+	if dto.Status != string(entity.StatusDraft) && dto.Status != string(entity.StatusReviewing) {
+		return respCode.InvalidParams
+	}
+
 	// 1. 获取新闻信息
 	news, err := s.NewsRepo.GetByID(id)
 	if err != nil {
@@ -102,58 +108,70 @@ func (s *NewsSvc) UpdateNews(id uint, dto dto.NewsUpdateSvcDTO) respCode.StatusC
 		return respCode.ServerBusy
 	}
 
-	// 2. 检查分类是否存在（如果更新了分类）
-	if dto.CategoryID != 0 && dto.CategoryID != news.CategoryID {
-		if _, err := s.CategoryRepo.GetByID(dto.CategoryID); err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return respCode.RecordNotFound
-			}
-			zap.L().Error("GetCategoryById fail", zap.Error(err))
-			return respCode.ServerBusy
+	// 2. 检查分类是否存在（即使没有变也检查）
+	if _, err := s.CategoryRepo.GetByID(dto.CategoryID); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return respCode.RecordNotFound
+		}
+		zap.L().Error("GetCategoryById fail", zap.Error(err))
+		return respCode.ServerBusy
+	}
+
+	// 3. 删除旧封面文件
+	if news.CoverURL != "" {
+		if err := upload.DeleteFile(news.CoverURL, "news"); err != nil {
+			zap.L().Warn("Delete old cover image fail", zap.Error(err))
 		}
 	}
 
-	// 3. 更新字段
-	if dto.Title != "" {
-		news.Title = dto.Title
-	}
-	if dto.CategoryID != 0 {
-		news.CategoryID = dto.CategoryID
-	}
-	if dto.Abstract != "" {
-		news.Abstract = dto.Abstract
-	}
-	if dto.Source != "" {
-		news.Source = dto.Source
-	}
-	if dto.Content != "" {
-		news.Content = dto.Content
-	}
-	if dto.CoverURL != "" {
-		news.CoverURL = dto.CoverURL
+	// 4. 删除旧文件
+	if news.FilesURL != nil {
+		var oldFiles []string
+		if err := json.Unmarshal(news.FilesURL, &oldFiles); err == nil {
+			for _, file := range oldFiles {
+				if err := upload.DeleteFile(file, "news"); err != nil {
+					zap.L().Warn("Delete old file fail", zap.String("file", file), zap.Error(err))
+				}
+			}
+		}
 	}
 
-	// 4. 更新关键词
+	// 5. 全量字段更新
+	news.Title = dto.Title
+	news.CategoryID = dto.CategoryID
+	news.Abstract = dto.Abstract
+	news.Type = entity.NewsType(dto.Type)
+	news.Source = dto.Source
+	news.Content = dto.Content
+	news.CoverURL = dto.CoverURL
+	news.Status = entity.NewsStatus(dto.Status)
+	news.UserID = dto.UserID
+
+	// 6. 更新关键词
 	if dto.Keyword != nil {
 		keywordJSON, err := json.Marshal(dto.Keyword)
 		if err != nil {
 			zap.L().Error("Marshal keyword fail", zap.Error(err))
 			return respCode.ServerBusy
 		}
-		news.Keyword = datatypes.JSON(keywordJSON)
+		news.Keyword = keywordJSON
+	} else {
+		news.Keyword = []byte("[]")
 	}
 
-	// 5. 更新文件URL
+	// 7. 更新文件URL
 	if dto.FilesURL != nil {
 		filesURLJSON, err := json.Marshal(dto.FilesURL)
 		if err != nil {
 			zap.L().Error("Marshal files_url fail", zap.Error(err))
 			return respCode.ServerBusy
 		}
-		news.FilesURL = datatypes.JSON(filesURLJSON)
+		news.FilesURL = filesURLJSON
+	} else {
+		news.FilesURL = []byte("[]")
 	}
 
-	// 6. 保存更新
+	// 8. 保存更新
 	if err := s.NewsRepo.Update(news); err != nil {
 		zap.L().Error("UpdateNews fail", zap.Error(err))
 		return respCode.ServerBusy
@@ -351,7 +369,38 @@ func (s *NewsSvc) ListNews(filter dto.NewsListFilterSvcDTO) (respCode.StatusCode
 
 // 删除新闻
 func (s *NewsSvc) DeleteNews(id uint) respCode.StatusCode {
-	err := s.NewsRepo.Delete(id)
+	// 删除本地文件
+	news, err := s.NewsRepo.GetByID(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return respCode.RecordNotFound
+		}
+		zap.L().Error("GetNewsById fail", zap.Error(err))
+		return respCode.ServerBusy
+	}
+
+	if news.CoverURL != "" {
+		err := upload.DeleteFile(news.CoverURL, "news")
+		if err != nil {
+			return respCode.ServerBusy
+		}
+	}
+
+	var filesURL []string
+	if news.FilesURL != nil {
+		if err := json.Unmarshal(news.FilesURL, &filesURL); err != nil {
+			zap.L().Error("Unmarshal files_url fail", zap.Error(err))
+		}
+	}
+
+	for _, fileURL := range filesURL {
+		err := upload.DeleteFile(fileURL, "news")
+		if err != nil {
+			return respCode.ServerBusy
+		}
+	}
+
+	err = s.NewsRepo.Delete(id)
 	if err != nil {
 		zap.L().Error("DeleteNews fail", zap.Error(err))
 		return respCode.ServerBusy

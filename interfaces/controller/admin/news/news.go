@@ -11,6 +11,7 @@ import (
 	ctrlDto "github.com/Agriculture-Develop/agriculturebd/interfaces/dto/admin/news"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/dig"
+	"log"
 )
 
 type Ctrl struct {
@@ -67,6 +68,49 @@ func (c *Ctrl) CreateNews(ctx *gin.Context) {
 	apiCtx.NoDataJSON(code)
 }
 
+// 修改新闻信息
+func (c *Ctrl) UpdateNews(ctx *gin.Context) {
+	apiCtx := controller.NewAPiContext[ctrlDto.NewsUpdateDTO](ctx)
+	if err := apiCtx.BindForm(); err != nil {
+		log.Println(err)
+		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
+		return
+	}
+
+	id, _ := apiCtx.GetIdByPath()
+
+	// 文件校验与上传
+	coverUrl, err := c.UploadSvc.UploadFile(apiCtx.Request.Cover, "news")
+	if err != nil {
+		apiCtx.NoDataJSON(respCode.InvalidParams, err.Error())
+		return
+	}
+
+	filesUrl, err := c.UploadSvc.UploadFiles(apiCtx.Request.Files, "news")
+	if err != nil {
+		apiCtx.NoDataJSON(respCode.InvalidParams, err.Error())
+		return
+	}
+
+	// DTO 转换
+	dto := svcDto.NewsUpdateSvcDTO{
+		Title:      apiCtx.Request.Title,
+		CategoryID: apiCtx.Request.CategoryID,
+		Abstract:   apiCtx.Request.Abstract,
+		Keyword:    apiCtx.Request.Keyword,
+		Source:     apiCtx.Request.Source,
+		Content:    apiCtx.Request.Content,
+		Type:       apiCtx.Request.Type,
+		CoverURL:   coverUrl,
+		FilesURL:   filesUrl,
+		Status:     apiCtx.Request.Status,
+		UserID:     apiCtx.GetUserIdByToken(),
+	}
+
+	code := c.Services.UpdateNews(id, dto)
+	apiCtx.NoDataJSON(code)
+}
+
 // 获取新闻列表
 func (c *Ctrl) GetNewsList(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[ctrlDto.NewsListFilterDTO](ctx)
@@ -96,32 +140,6 @@ func (c *Ctrl) GetNewsDetail(ctx *gin.Context) {
 	code, vo := c.Services.GetNewsDetail(id)
 
 	apiCtx.WithDataJSON(code, vo)
-}
-
-// 修改新闻信息
-func (c *Ctrl) UpdateNews(ctx *gin.Context) {
-	apiCtx := controller.NewAPiContext[ctrlDto.NewsUpdateDTO](ctx)
-	if err := apiCtx.BindJSON(); err != nil {
-		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
-		return
-	}
-
-	id, _ := apiCtx.GetIdByPath()
-
-	// DTO 转换
-	dto := svcDto.NewsUpdateSvcDTO{
-		Title:      apiCtx.Request.Title,
-		CategoryID: apiCtx.Request.CategoryID,
-		Abstract:   apiCtx.Request.Abstract,
-		Keyword:    apiCtx.Request.Keyword,
-		Source:     apiCtx.Request.Source,
-		Content:    apiCtx.Request.Content,
-		CoverURL:   apiCtx.Request.CoverURL,
-		FilesURL:   apiCtx.Request.FilesURL,
-	}
-
-	code := c.Services.UpdateNews(id, dto)
-	apiCtx.NoDataJSON(code)
 }
 
 // 修改新闻状态

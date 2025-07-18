@@ -80,3 +80,18 @@ func UploadFile(file *multipart.FileHeader, types string) (string, error) {
 
 	return filename, nil
 }
+
+func DeleteFile(fileName, types string) error {
+	baseDir := filepath.Join(config.Get().File.Path, types)
+	filePath := filepath.Join(baseDir, fileName)
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return fmt.Errorf("文件不存在：%s", filePath)
+	}
+
+	if err := os.Remove(filePath); err != nil {
+		return fmt.Errorf("删除文件失败：%w", err)
+	}
+
+	return nil
+}
