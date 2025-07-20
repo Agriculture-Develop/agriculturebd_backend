@@ -2,6 +2,7 @@ package routes
 
 import (
 	"fmt"
+	"github.com/Agriculture-Develop/agriculturebd/api/routes/public"
 	"github.com/Agriculture-Develop/agriculturebd/interfaces/controller/middleware"
 	"net/http"
 
@@ -55,10 +56,13 @@ func registerRoute(r *gin.Engine) *gin.Engine {
 		userCtrl Interface.IUserCtrl,
 		newsCtrl Interface.INewsCtrl,
 		newsCategoryCtrl Interface.INewsCategoryCtrl,
+		supplyDemandCtrl Interface.ISupplyDemandCtrl,
 	) {
 		auth.AuthModels(v1.Group("auth"), authCtrl)
 		admin.UserModels(v1.Group("admin"), userCtrl)
 		admin.NewsModels(v1.Group("admin"), newsCtrl, newsCategoryCtrl)
+		public.SupplyDemandModels(v1.Group("public"), supplyDemandCtrl)
+		public.UserModels(v1.Group("public"), userCtrl)
 	})
 	if err != nil {
 		panic(err)

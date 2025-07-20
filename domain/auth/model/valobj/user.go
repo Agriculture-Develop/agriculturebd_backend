@@ -3,6 +3,11 @@ package valobj
 type UserRole int
 
 const (
+	RoleFarmer UserRole = -iota - 1
+	RoleSupplier
+)
+
+const (
 	RoleUser       UserRole = iota // 0 - 普通用户
 	RoleAdmin                      // 1 - 管理员
 	RoleSuperAdmin                 // 2 - 超级管理员
@@ -11,11 +16,15 @@ const (
 func (r UserRole) Desc() string {
 	switch r {
 	case RoleUser:
-		return "用户"
+		return "普通用户"
 	case RoleAdmin:
 		return "管理员"
 	case RoleSuperAdmin:
 		return "超级管理员"
+	case RoleSupplier:
+		return "供应商"
+	case RoleFarmer:
+		return "农户"
 	default:
 		return "未知角色"
 	}

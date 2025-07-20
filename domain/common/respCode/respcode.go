@@ -26,6 +26,10 @@ const (
 
 	InvalidDataUpdate
 	UserALREADYLocked
+
+	// 供需模块
+	SupplyDemandNotExist
+	CommentNotExist
 )
 
 var Msg = map[StatusCode]string{
@@ -48,4 +52,8 @@ var Msg = map[StatusCode]string{
 	InvalidTokenExpired: "Token已过期",
 	InvalidDataUpdate:   "不合法的数据更新",
 	UserALREADYLocked:   "用户已被锁定",
+
+	// 供需模块
+	SupplyDemandNotExist: "供需信息不存在",
+	CommentNotExist:      "评论不存在",
 }

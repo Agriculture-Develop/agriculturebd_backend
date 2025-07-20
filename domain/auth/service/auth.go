@@ -65,7 +65,7 @@ func (a *Svc) LoginByPassword(phone, password string) (respCode.StatusCode, vo.L
 	return respCode.Success, vo.LoginSvcVo{
 		Id:    user.ID,
 		Token: token,
-		Role:  user.Role.Int(),
+		Role:  user.Role.Desc(),
 	}
 }
 
@@ -101,7 +101,7 @@ func (a *Svc) LoginByCode(phone, code string) (respCode.StatusCode, vo.LoginSvcV
 	return respCode.Success, vo.LoginSvcVo{
 		Id:    user.ID,
 		Token: token,
-		Role:  user.Role.Int(),
+		Role:  user.Role.Desc(),
 	}
 }
 

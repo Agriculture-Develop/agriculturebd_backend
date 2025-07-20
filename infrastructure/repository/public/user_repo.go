@@ -1,4 +1,4 @@
-package user
+package public
 
 import (
 	"github.com/Agriculture-Develop/agriculturebd/domain/user/model/entity"
@@ -63,14 +63,12 @@ func (r *Repo) GetUserById(id uint) (*entity.User, error) {
 }
 
 func (r *Repo) UpdateUser(user *entity.User) error {
-	return r.Db.Model(&model.User{}).
-		Where("id = ?", user.ID).
-		Select("Nickname", "Role", "Status").
-		Updates(model.User{
-			Nickname: user.Nickname,
-			Role:     int(user.Role),
-			Status:   int(user.Status),
-		}).Error
+	return r.Db.Where("id = ?", user.ID).Updates(&model.User{
+		Nickname:   user.Nickname,
+		Role:       int(user.Role),
+		Status:     int(user.Status),
+		AvatarPath: user.AvatarPath,
+	}).Error
 }
 
 func (r *Repo) DeleteUser(id uint) error {

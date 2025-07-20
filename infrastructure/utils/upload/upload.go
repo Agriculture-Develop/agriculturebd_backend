@@ -86,7 +86,7 @@ func DeleteFile(fileName, types string) error {
 	filePath := filepath.Join(baseDir, fileName)
 
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return fmt.Errorf("文件不存在：%s", filePath)
+		return nil
 	}
 
 	if err := os.Remove(filePath); err != nil {

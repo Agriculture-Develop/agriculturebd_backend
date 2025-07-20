@@ -56,7 +56,7 @@ func (c *Ctrl) GetUserList(ctx *gin.Context) {
 }
 
 // UpdateUserInfo 更新用户信息
-func (c *Ctrl) UpdateUserInfo(ctx *gin.Context) {
+func (c *Ctrl) UpdateUserInfoByAdmin(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[userDto.UpdateUserInfoCtrlDto](ctx)
 	if err := apiCtx.BindJSON(); err != nil {
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
@@ -84,5 +84,47 @@ func (c *Ctrl) DeleteUser(ctx *gin.Context) {
 	}
 
 	code := c.Services.DeleteUser(userId)
+	apiCtx.NoDataJSON(code)
+}
+
+// 公用模块
+
+func (c *Ctrl) GetUserDetail(ctx *gin.Context) {
+	apiCtx := controller.NewAPiContext[struct{}](ctx)
+	id := apiCtx.GetUserIdByToken()
+
+	code, user := c.Services.GetUserDetail(id)
+
+	apiCtx.WithDataJSON(code, user)
+
+}
+
+func (c *Ctrl) UpdateUserAvatar(ctx *gin.Context) {
+
+	apiCtx := controller.NewAPiContext[struct{}](ctx)
+	id := apiCtx.GetUserIdByToken()
+
+	// 从表单中获取头像
+	file, err := ctx.FormFile("avatar")
+	if err != nil {
+		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
+		return
+	}
+
+	code := c.Services.UpdateUserAvatar(id, file)
+
+	apiCtx.NoDataJSON(code)
+}
+
+// UpdateUserInfo 更新用户信息
+func (c *Ctrl) UpdateUserInfoByUser(ctx *gin.Context) {
+	apiCtx := controller.NewAPiContext[userDto.UpdateUserInfoCtrlDto](ctx)
+	if err := apiCtx.BindJSON(); err != nil {
+		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
+		return
+	}
+	userId := apiCtx.GetUserIdByToken()
+
+	code := c.Services.UpdateUserInfo(userId, apiCtx.Request.Nickname, apiCtx.Request.Role, apiCtx.Request.Status)
 	apiCtx.NoDataJSON(code)
 }

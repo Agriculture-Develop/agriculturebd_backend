@@ -221,9 +221,58 @@ VALUES
     (4, '种植方法', '农作物种植技术和方法', 4, '2023-10-13 13:13:13'),
     (5, '行业动态', '农业行业最新发展动态', 5, '2023-10-14 14:14:14');
 
--- 添加额外的分类用于测试
+
 INSERT INTO news_categories (name, description, sort_order)
 VALUES
     ('农产品加工', '农产品深加工技术与方法', 6),
     ('有机农业', '有机种植和生态农业技术', 7),
     ('农业金融', '农业贷款和金融服务信息', 8);
+
+
+
+CREATE TABLE supply_demand (
+                               id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '供需ID',
+                               title VARCHAR(255) NOT NULL COMMENT '标题',
+                               content TEXT COMMENT '内容',
+                               tag_weigh VARCHAR(255) DEFAULT '0' COMMENT '标签重量',
+                               tag_name VARCHAR(255) DEFAULT '' COMMENT '标签名称',
+                               tag_price VARCHAR(255) DEFAULT '' COMMENT '标签价格',
+                               cover_url VARCHAR(512) DEFAULT '' COMMENT '封面图地址',
+                               files_url JSON COMMENT '附件地址列表',
+                               likes INT DEFAULT 0 COMMENT '点赞数',
+                               user_id INT UNSIGNED COMMENT '用户id',
+                               created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                               updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                               deleted_at DATETIME DEFAULT NULL COMMENT '删除时间',
+                               INDEX (user_id),
+                               INDEX (deleted_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='供需表';
+
+INSERT INTO supply_demand (title, content, tag_weigh, tag_name, tag_price, cover_url, files_url, likes, user_id, created_at, updated_at)
+VALUES
+    ('优质苹果出售', '新鲜采摘的红富士苹果，味甜多汁。', '10斤装', '红富士', '80元', 'https://example.com/covers/apple.jpg', '["https://example.com/files/apple1.jpg","https://example.com/files/apple2.jpg"]', 12, 1, NOW(), NOW()),
+
+    ('求购玉米', '需要大量饲料玉米，长期合作。', '50斤装', '饲料玉米', '120元', 'https://example.com/covers/corn.jpg', '["https://example.com/files/corn1.jpg"]', 5, 2, NOW(), NOW()),
+
+    ('土鸡蛋出售', '自家散养土鸡蛋，营养丰富，口感香浓。', '30枚装', '土鸡蛋', '65元', 'https://example.com/covers/eggs.jpg', '["https://example.com/files/egg1.jpg"]', 20, 3, NOW(), NOW()),
+
+    ('求购辣椒', '收购大量红辣椒，要求干净无虫。', '20斤装', '红辣椒', '100元', 'https://example.com/covers/chili.jpg', '["https://example.com/files/chili1.jpg"]', 8, 4, NOW(), NOW()),
+
+    ('自家花生出售', '本地花生，颗粒饱满，味道香。', '25斤装', '本地花生', '90元', 'https://example.com/covers/peanut.jpg', '["https://example.com/files/peanut1.jpg"]', 15, 5, NOW(), NOW());
+
+
+
+-- 一级评论
+INSERT INTO `supply_demand_comment` (`supply_demand_id`, `user_id`, `comment_content`, `like_count`, `reply_id`, `created_at`, `updated_at`) VALUES
+                                                                                                                                                 (1, 101, '苹果看起来不错，有联系方式吗？', 3, 0, NOW(), NOW()),
+                                                                                                                                                 (1, 102, '请问发货地是哪里？', 1, 0, NOW(), NOW()),
+                                                                                                                                                 (2, 103, '我这边有玉米资源，稍后联系。', 2, 0, NOW(), NOW());
+
+-- 回复评论（reply_id 指向上面评论的 ID）
+INSERT INTO `supply_demand_comment` (`supply_demand_id`, `user_id`, `comment_content`, `like_count`, `reply_id`, `created_at`, `updated_at`) VALUES
+                                                                                                                                                 (1, 201, '可以私聊我，电话xxx', 0, 1, NOW(), NOW()), -- 回复第1条评论
+                                                                                                                                                 (1, 202, '在山东发货。', 0, 2, NOW(), NOW());          -- 回复第2条评论
+
+
+alter table users
+    modify role tinyint default '0' not null comment '用户角色';

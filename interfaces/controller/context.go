@@ -77,7 +77,12 @@ func (ctrl *ApiContext[T]) GetUserIdByRole() int {
 }
 
 // GetIdByPath get user id from path
-func (ctrl *ApiContext[T]) GetIdByPath() (uint, error) {
+func (ctrl *ApiContext[T]) GetIdByPath(name ...string) (uint, error) {
+	if len(name) != 0 && name[0] != "" {
+		id, err := strconv.ParseInt(ctrl.c.Param(name[0]), 10, 64)
+		return uint(id), err
+	}
+
 	id, err := strconv.ParseInt(ctrl.c.Param("id"), 10, 64)
 	return uint(id), err
 }

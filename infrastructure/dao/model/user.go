@@ -12,7 +12,7 @@ type User struct {
 	Password   string `gorm:"type:varchar(255);not null;comment:用户密码" json:"-"`
 	AvatarPath string `gorm:"type:varchar(255);default:'';comment:头像地址" json:"avatar_path"`
 	Nickname   string `gorm:"type:varchar(32);not null;comment:用户昵称" json:"nickname"`
-	Role       int    `gorm:"type:tinyint(1);default:0;comment:用户角色(0普通用户 1管理员 2超级管理员)" json:"role"`
+	Role       int    `gorm:"type:tinyint;default:0;not null;comment:用户角色" json:"role"`
 	Status     int    `gorm:"type:tinyint(1);default:0;comment:用户状态(0启用 1禁用)" json:"status"`
 	Phone      string `gorm:"type:varchar(20);not null;unique;comment:手机号" json:"phone"`
 

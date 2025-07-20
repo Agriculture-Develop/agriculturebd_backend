@@ -3,9 +3,12 @@ package Interface
 import "github.com/gin-gonic/gin"
 
 type IUserCtrl interface {
-	UpdateUserInfo(c *gin.Context)
+	UpdateUserInfoByAdmin(c *gin.Context)
+	UpdateUserInfoByUser(c *gin.Context)
 	GetUserList(c *gin.Context)
 	DeleteUser(c *gin.Context)
+	GetUserDetail(c *gin.Context)
+	UpdateUserAvatar(c *gin.Context)
 }
 
 type IAuthCtrl interface {
@@ -40,4 +43,24 @@ type INewsCategoryCtrl interface {
 	UpdateCategory(ctx *gin.Context)
 	// 删除新闻分类
 	DeleteCategory(ctx *gin.Context)
+}
+
+// ISupplyDemandCtrl 供需控制器接口
+type ISupplyDemandCtrl interface {
+	// 获取供需列表
+	GetSupplyDemandList(ctx *gin.Context)
+	// 获取供需详情
+	GetSupplyDemandDetail(ctx *gin.Context)
+	// 创建供需
+	CreateSupplyDemand(ctx *gin.Context)
+	// 删除供需
+	DeleteSupplyDemand(ctx *gin.Context)
+	// 获取评论列表
+	GetCommentList(ctx *gin.Context)
+	// 获取评论详情
+	GetCommentDetail(ctx *gin.Context)
+	// 创建评论
+	CreateComment(ctx *gin.Context)
+	// 删除评论
+	DeleteComment(ctx *gin.Context)
 }
