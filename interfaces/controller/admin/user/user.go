@@ -118,13 +118,13 @@ func (c *Ctrl) UpdateUserAvatar(ctx *gin.Context) {
 
 // UpdateUserInfo 更新用户信息
 func (c *Ctrl) UpdateUserInfoByUser(ctx *gin.Context) {
-	apiCtx := controller.NewAPiContext[userDto.UpdateUserInfoCtrlDto](ctx)
-	if err := apiCtx.BindJSON(); err != nil {
+	apiCtx := controller.NewAPiContext[userDto.UpdateUserInfoCtrlDtoByUser](ctx)
+	if err := apiCtx.BindForm(); err != nil {
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
 		return
 	}
 	userId := apiCtx.GetUserIdByToken()
 
-	code := c.Services.UpdateUserInfo(userId, apiCtx.Request.Nickname, apiCtx.Request.Role, apiCtx.Request.Status)
+	code := c.Services.UpdateUserInfoByUser(userId, apiCtx.Request.Nickname, apiCtx.Request.Role, apiCtx.Request.Avatar)
 	apiCtx.NoDataJSON(code)
 }

@@ -3,6 +3,7 @@ package public
 // SupplyDemandDetailVO 供需详情
 type SupplyDemandDetailVO struct {
 	ID            uint     `json:"id"`
+	UserId        uint     `json:"user_id"`
 	Title         string   `json:"title"`
 	Content       string   `json:"content"`
 	CoverURL      string   `json:"cover_url"`
@@ -28,16 +29,16 @@ type SupplyDemandListVO struct {
 
 // SupplyDemandItemVO 供需列表项
 type SupplyDemandItemVO struct {
-	PublisherName string `json:"publisher_name"`
-	CreatedAt     string `json:"created_at"`
-	Role          string `json:"role"`
-	Title         string `json:"title"`
-	Content       string `json:"content"`
-	TagName       string `json:"tag_name"`
-	TagWeigh      string `json:"tag_weigh"`
-	TagPrice      string `json:"tag_price"`
-	CoverURL      string `json:"cover_url"`
-	Like          string `json:"like"`
+	Id        uint   `json:"id"`
+	UserId    uint   `json:"userid"`
+	CreatedAt string `json:"created_at"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	TagName   string `json:"tag_name"`
+	TagWeigh  string `json:"tag_weigh"`
+	TagPrice  string `json:"tag_price"`
+	CoverURL  string `json:"cover_url"`
+	Like      string `json:"like"`
 }
 
 // CommentDetailVO 评论详情

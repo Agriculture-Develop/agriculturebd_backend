@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/json"
 	"errors"
-	"github.com/Agriculture-Develop/agriculturebd/domain/user/model/valobj"
 	userRepo "github.com/Agriculture-Develop/agriculturebd/domain/user/repository"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/upload"
 	"strconv"
@@ -94,6 +93,7 @@ func (s *SupplyDemandSvc) GetSupplyDemandDetail(id uint) (respCode.StatusCode, *
 	// 3. 构建返回VO
 	supplyDemandVO := &vo.SupplyDemandDetailSvcVO{
 		ID:            supplyDemand.ID,
+		UserId:        supplyDemand.UserId,
 		Title:         supplyDemand.Title,
 		Content:       supplyDemand.Content,
 		CoverURL:      supplyDemand.CoverURL,
@@ -137,24 +137,17 @@ func (s *SupplyDemandSvc) ListSupplyDemand(filter dto.SupplyDemandListFilterSvcD
 	supplyDemandVOs := make([]vo.SupplyDemandListItemSvcVO, 0, len(supplyDemandList))
 	for _, item := range supplyDemandList {
 
-		u, err := s.UserRepo.GetUserById(item.UserId)
-		if err != nil {
-			zap.L().Error("GetUserById fail", zap.Error(err))
-			return respCode.ServerBusy, nil
-		}
-
 		supplyDemandVOs = append(supplyDemandVOs, vo.SupplyDemandListItemSvcVO{
-			Id:            item.ID,
-			PublisherName: u.Nickname,
-			CreatedAt:     item.CreatedAt.Format("2006-01-02 15:04:05"),
-			Role:          valobj.UserRole(u.Role).Desc(),
-			Title:         item.Title,
-			Content:       item.Content,
-			TagName:       item.TagName,
-			TagWeigh:      item.TagWeigh,
-			TagPrice:      item.TagPrice,
-			CoverURL:      item.CoverURL,
-			Like:          strconv.Itoa(item.Likes),
+			Id:        item.ID,
+			UserId:    item.UserId,
+			CreatedAt: item.CreatedAt.Format("2006-01-02 15:04:05"),
+			Title:     item.Title,
+			Content:   item.Content,
+			TagName:   item.TagName,
+			TagWeigh:  item.TagWeigh,
+			TagPrice:  item.TagPrice,
+			CoverURL:  item.CoverURL,
+			Like:      strconv.Itoa(item.Likes),
 		})
 	}
 

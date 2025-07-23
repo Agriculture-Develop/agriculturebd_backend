@@ -23,6 +23,9 @@ type IUserSvc interface {
 	DeleteUser(userId uint) respCode.StatusCode
 	// 获取用户详情
 	GetUserDetail(userId uint) (respCode.StatusCode, vo.UserSvcVo)
+
+	UpdateUserInfoByUser(userId uint, nickname string, role string, avatar *multipart.FileHeader) respCode.StatusCode
+
 	// 更新用户头像
 	UpdateUserAvatar(userId uint, avatar *multipart.FileHeader) respCode.StatusCode
 }
@@ -77,19 +80,16 @@ func (s *Svc) UpdateUserInfo(userId uint, nickname string, role, status string) 
 		return respCode.InvalidParams
 	}
 
-	// 身份校验
-	if role != "" && valobj.GetUserRole(role).Int() > 0 && user.Role != valobj.RoleSuperAdmin {
-		return respCode.Forbidden
-	}
-
 	// 2. 更新用户信息
-	user.Nickname = nickname
+	if nickname != "" {
+		user.Nickname = nickname
+	}
 
 	if role != "" {
 		user.Role = valobj.GetUserRole(role)
 	}
 
-	if user.Role == valobj.RoleSuperAdmin && valobj.GetUserStatus(status) != valobj.StatusUnknown {
+	if valobj.GetUserStatus(status) != valobj.StatusUnknown {
 		user.Status = valobj.GetUserStatus(status)
 	}
 
@@ -169,6 +169,62 @@ func (s *Svc) UpdateUserAvatar(userId uint, avatar *multipart.FileHeader) respCo
 	// 更新用户信息
 	if err := s.Repo.UpdateUser(user); err != nil {
 		zap.L().Error("[UpdateUserAvatar] UpdateUser failed", zap.Error(err))
+		return respCode.ServerBusy
+	}
+
+	return respCode.Success
+}
+
+func (s *Svc) UpdateUserInfoByUser(userId uint, nickname string, role string, avatar *multipart.FileHeader) respCode.StatusCode {
+	// 1. 获取用户信息
+	user, err := s.Repo.GetUserById(userId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return respCode.UserNotExist
+		}
+		zap.L().Error("GetUserById fail", zap.Error(err))
+		return respCode.ServerBusy
+	}
+
+	// 更新用户头像
+	if avatar != nil {
+		// 删除旧头像
+		if user.AvatarPath != "" {
+			if err := upload.DeleteFile(user.AvatarPath, "avatar"); err != nil {
+				zap.L().Error("[UpdateUserAvatar] DeleteFile failed", zap.Error(err))
+				return respCode.ServerBusy
+			}
+		}
+
+		// 上传新头像
+		user.AvatarPath, err = upload.UploadFile(avatar, "avatar")
+		if err != nil {
+			zap.L().Error("[UpdateUserAvatar] UploadFile failed", zap.Error(err))
+			return respCode.ServerBusy
+		}
+	}
+
+	// 校验参数
+	if role != "" && valobj.GetUserRole(role) == valobj.RoleUnknown {
+		return respCode.InvalidParams
+	}
+
+	// 身份校验
+	if role != "" && valobj.GetUserRole(role).Int() > 0 {
+		return respCode.Forbidden
+	}
+
+	// 2. 更新用户信息
+	if nickname != "" {
+		user.Nickname = nickname
+	}
+
+	if role != "" {
+		user.Role = valobj.GetUserRole(role)
+	}
+
+	if err := s.Repo.UpdateUser(user); err != nil {
+		zap.L().Error("UpdateUser fail", zap.Error(err))
 		return respCode.ServerBusy
 	}
 

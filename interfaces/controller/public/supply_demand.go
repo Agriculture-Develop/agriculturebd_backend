@@ -57,16 +57,16 @@ func (c *SupplyDemandCtrl) GetSupplyDemandList(ctx *gin.Context) {
 
 	for _, item := range vo.List {
 		res.List = append(res.List, ctrlVo.SupplyDemandItemVO{
-			PublisherName: item.PublisherName,
-			CreatedAt:     item.CreatedAt,
-			Role:          item.Role,
-			Title:         item.Title,
-			Content:       item.Content,
-			TagName:       item.TagName,
-			TagWeigh:      item.TagWeigh,
-			TagPrice:      item.TagPrice,
-			CoverURL:      item.CoverURL,
-			Like:          item.Like,
+			Id:        item.Id,
+			UserId:    item.UserId,
+			CreatedAt: item.CreatedAt,
+			Title:     item.Title,
+			Content:   item.Content,
+			TagName:   item.TagName,
+			TagWeigh:  item.TagWeigh,
+			TagPrice:  item.TagPrice,
+			CoverURL:  item.CoverURL,
+			Like:      item.Like,
 		})
 	}
 
@@ -91,6 +91,7 @@ func (c *SupplyDemandCtrl) GetSupplyDemandDetail(ctx *gin.Context) {
 	// VO 转换
 	res := &ctrlVo.SupplyDemandDetailVO{
 		ID:            vo.ID,
+		UserId:        vo.UserId,
 		Title:         vo.Title,
 		Content:       vo.Content,
 		CoverURL:      vo.CoverURL,
