@@ -269,8 +269,8 @@ func (s *NewsSvc) GetNewsDetail(id uint) (respCode.StatusCode, *vo.NewsDetailSvc
 		Status:     string(news.Status),
 		Author:     author,
 		Type:       string(news.Type),
-		CreatedAt:  news.CreatedAt,
-		UpdatedAt:  news.UpdatedAt,
+		CreatedAt:  news.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt:  news.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 
 	return respCode.Success, newsVO
@@ -354,8 +354,8 @@ func (s *NewsSvc) ListNews(filter dto.NewsListFilterSvcDTO) (respCode.StatusCode
 			Status:     string(news.Status),
 			Author:     author,
 			Type:       string(news.Type),
-			CreatedAt:  news.CreatedAt,
-			UpdatedAt:  news.UpdatedAt,
+			CreatedAt:  news.CreatedAt.Format("2006-01-02 15:04:05"),
+			UpdatedAt:  news.UpdatedAt.Format("2006-01-02 15:04:05"),
 		}
 		newsVOs = append(newsVOs, newsVO)
 	}

@@ -32,9 +32,9 @@ type NewsUpdateDTO struct {
 
 // NewsListFilterDTO 新闻列表筛选请求
 type NewsListFilterDTO struct {
-	Title  string `json:"title"`
-	Author string `json:"author"`
-	Status string `json:"status"`
-	Page   int    `json:"page"`
-	Count  int    `json:"count"`
+	Title  string `form:"title"`
+	Author string `form:"author"`
+	Status string `form:"status"`
+	Page   int    `form:"page"`
+	Count  int    `form:"count"`
 }

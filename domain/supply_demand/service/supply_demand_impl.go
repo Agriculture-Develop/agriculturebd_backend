@@ -144,6 +144,7 @@ func (s *SupplyDemandSvc) ListSupplyDemand(filter dto.SupplyDemandListFilterSvcD
 		}
 
 		supplyDemandVOs = append(supplyDemandVOs, vo.SupplyDemandListItemSvcVO{
+			Id:            item.ID,
 			PublisherName: u.Nickname,
 			CreatedAt:     item.CreatedAt.Format("2006-01-02 15:04:05"),
 			Role:          valobj.UserRole(u.Role).Desc(),

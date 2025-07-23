@@ -31,7 +31,7 @@ func NewSupplyDemandCtrl(svc service.ISupplyDemandService, commentSvc service.IS
 // GetSupplyDemandList 获取供需列表
 func (c *SupplyDemandCtrl) GetSupplyDemandList(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[ctrlDto.SupplyDemandListFilterCtrlDTO](ctx)
-	if err := apiCtx.BindJSON(); err != nil {
+	if err := apiCtx.BindQuery(); err != nil {
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
 		return
 	}

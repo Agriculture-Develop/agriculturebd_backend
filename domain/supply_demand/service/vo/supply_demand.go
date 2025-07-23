@@ -23,6 +23,7 @@ type SupplyDemandListSvcVO struct {
 
 // SupplyDemandListItemSvcVO 供需列表项服务层VO
 type SupplyDemandListItemSvcVO struct {
+	Id            uint   `json:"id"`
 	PublisherName string `json:"publisher_name"`
 	CreatedAt     string `json:"created_at"`
 	Role          string `json:"role"`

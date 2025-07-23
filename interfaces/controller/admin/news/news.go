@@ -1,6 +1,7 @@
 package news
 
 import (
+	"fmt"
 	"github.com/Agriculture-Develop/agriculturebd/api/routes/Interface"
 	"github.com/Agriculture-Develop/agriculturebd/domain/common/respCode"
 	upload "github.com/Agriculture-Develop/agriculturebd/domain/common/service"
@@ -114,8 +115,9 @@ func (c *Ctrl) UpdateNews(ctx *gin.Context) {
 // 获取新闻列表
 func (c *Ctrl) GetNewsList(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[ctrlDto.NewsListFilterDTO](ctx)
-	if err := apiCtx.BindJSON(); err != nil {
+	if err := apiCtx.BindQuery(); err != nil {
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
+		fmt.Println(err)
 		return
 	}
 

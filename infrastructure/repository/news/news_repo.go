@@ -2,8 +2,6 @@ package news
 
 import (
 	"encoding/json"
-	"fmt"
-
 	"github.com/Agriculture-Develop/agriculturebd/domain/news/entity"
 	"github.com/Agriculture-Develop/agriculturebd/domain/news/repository"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/dao/model"
@@ -87,21 +85,20 @@ func (r *NewsRepo) GetByID(id uint) (*entity.News, error) {
 		UpdatedAt:   dbNews.UpdatedAt,
 	}, nil
 }
-
 func (r *NewsRepo) List(filter repository.NewsListFilter) ([]*entity.News, int64, error) {
 	var dbNews []model.News
 	var total int64
 
 	query := r.Db.Model(&model.News{})
+
 	if filter.Title != "" {
-		query = query.Where("title LIKE ?", "%"+filter.Title+"%")
+		query = query.Where("news.title LIKE ?", "%"+filter.Title+"%")
 	}
 	if filter.Status != "" {
-		query = query.Where("status = ?", filter.Status)
+		query = query.Where("news.status = ?", filter.Status)
 	}
-	fmt.Println("filter.Author: ", filter.Author)
 	if filter.Author != "" {
-		query = query.Joins("JOIN users on users.id = news.user_id").
+		query = query.Joins("JOIN users ON users.id = news.user_id").
 			Where("users.nickname LIKE ?", "%"+filter.Author+"%")
 	}
 
@@ -110,7 +107,7 @@ func (r *NewsRepo) List(filter repository.NewsListFilter) ([]*entity.News, int64
 	}
 
 	offset := (filter.Page - 1) * filter.PageSize
-	if err := query.Order("created_at desc").Offset(offset).Limit(filter.PageSize).Find(&dbNews).Error; err != nil {
+	if err := query.Order("news.created_at DESC").Offset(offset).Limit(filter.PageSize).Find(&dbNews).Error; err != nil {
 		return nil, 0, err
 	}
 
