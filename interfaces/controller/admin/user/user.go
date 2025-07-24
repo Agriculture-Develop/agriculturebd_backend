@@ -91,7 +91,11 @@ func (c *Ctrl) DeleteUser(ctx *gin.Context) {
 
 func (c *Ctrl) GetUserDetail(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[struct{}](ctx)
-	id := apiCtx.GetUserIdByToken()
+	id, err := apiCtx.GetIdByPath()
+	if err != nil {
+		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
+		return
+	}
 
 	code, user := c.Services.GetUserDetail(id)
 
