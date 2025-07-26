@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"errors"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/entity"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/valobj"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/repository"
@@ -48,9 +47,6 @@ func (r *Repo) GetUserById(id uint) (*entity.User, error) {
 func (r *Repo) GetUserByPhone(phone string) (*entity.User, error) {
 	var user model.User
 	if err := r.Db.Where("phone = ?", phone).First(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
 		return nil, err
 	}
 
