@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // 抽象类型工厂
 type TypeFactory interface {
 	NewCtrl() Ctrl
@@ -28,3 +30,9 @@ type UserFactory struct{}
 func (f *UserFactory) NewCtrl() Ctrl { return &UserCtrl{} }
 func (f *UserFactory) NewSvc() Svc   { return &UserSvc{} }
 func (f *UserFactory) NewDao() Dao   { return &UserDao{} }
+
+func main() {
+	n := fmt.Sprint("xxx")
+	fmt.Println(n)
+
+}

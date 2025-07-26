@@ -56,6 +56,15 @@ func (e *BizErr) Log(ctx context.Context, args ...any) *BizErr {
 	return e
 }
 
+func (e *BizErr) WithExtraMsg(msg ...any) *BizErr {
+	str := fmt.Sprint(msg...)
+	if len(msg) == 0 || str == "" || str == "<nil>" {
+		return e
+	}
+	e.Err = fmt.Errorf("%s: %s", bizcode.ErrMsg[e.Code], str)
+	return e
+}
+
 func (e *BizErr) Logf(ctx context.Context, format string, args ...any) *BizErr {
 	_, file, line, _ := runtime.Caller(1)
 	e.logger(ctx, file, line, fmt.Sprintf(format, args...))

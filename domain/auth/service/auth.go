@@ -42,7 +42,7 @@ func NewAuthSvc(r repository.IAuthRepo, sms repository.ISMSUtils) IAuthSvc {
 func (a *Svc) LoginByPassword(ctx context.Context, phone, password string) (vo.LoginSvcVo, *bizerr.BizErr) {
 	// 0. 验证参数
 	if !entity.CheckPhone(phone) || !entity.CheckPassword(password) {
-		return vo.LoginSvcVo{}, a.biz.CodeErr(bizcode.InvalidParams, fmt.Errorf("用户名或密码错误"))
+		return vo.LoginSvcVo{}, a.biz.CodeErr(bizcode.InvalidParams).WithExtraMsg(errors.New("手机号或者格式错误"))
 	}
 
 	// 1. 获取用户信息
