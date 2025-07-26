@@ -9,6 +9,8 @@ import (
 	"os"
 )
 
+var Logger *zap.SugaredLogger
+
 func Init() {
 
 	LogConf := config.Get().Log
@@ -42,11 +44,10 @@ func Init() {
 	}
 
 	// 创建 logger 对象
-	log := zap.New(core, zap.AddCaller())
+	zLogger := zap.New(core, zap.AddCaller())
 
-	// 替换全局的 logger, 后续在其他包中只需使用zap.L()调用即可
-	zap.ReplaceGlobals(log)
-
+	Logger = zLogger.Sugar()
+	zap.ReplaceGlobals(zLogger)
 }
 
 // 获取Encoder，给初始化logger使用的

@@ -4,8 +4,10 @@ import (
 	"github.com/Agriculture-Develop/agriculturebd/api/routes/Interface"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/service"
 	"github.com/Agriculture-Develop/agriculturebd/domain/common/respCode"
+	"github.com/Agriculture-Develop/agriculturebd/infrastructure/common/bizcode"
 	"github.com/Agriculture-Develop/agriculturebd/interfaces/controller"
 	dto "github.com/Agriculture-Develop/agriculturebd/interfaces/dto/auth"
+	"github.com/Agriculture-Develop/agriculturebd/interfaces/vo/resp"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/dig"
 )
@@ -25,14 +27,17 @@ func NewAuthCtrl(srv service.IAuthSvc) Interface.IAuthCtrl {
 // 密码登录
 func (api *Ctrl) LoginByPassword(c *gin.Context) {
 	ctx := controller.NewAPiContext[dto.LoginByPwdSCtrlDTO](c)
-
 	if err := ctx.BindJSON(); err != nil {
-		ctx.NoDataJSON(respCode.InvalidParams)
+		ctx.Fail(resp.Error(bizcode.InvalidParams, err))
 		return
 	}
 
-	statusCode, loginSvcVo := api.Services.LoginByPassword(ctx.Request.Phone, ctx.Request.Password)
-	ctx.WithDataJSON(statusCode, loginSvcVo)
+	res, err := api.Services.LoginByPassword(c.Request.Context(), ctx.Request.Phone, ctx.Request.Password)
+	if err != nil {
+		ctx.Fail(err)
+		return
+	}
+	ctx.Success(res)
 }
 
 // 验证码登录

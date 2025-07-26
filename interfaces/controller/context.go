@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/Agriculture-Develop/agriculturebd/domain/common/respCode"
+	"github.com/Agriculture-Develop/agriculturebd/infrastructure/common/bizerr"
 	"github.com/Agriculture-Develop/agriculturebd/interfaces/vo/resp"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -50,6 +51,11 @@ func (ctrl *ApiContext[T]) BindQuery() error {
 
 // BindQuery bind query to request
 func (ctrl *ApiContext[T]) BindForm() error {
+	return ctrl.c.ShouldBind(ctrl.Request)
+}
+
+// Bind
+func (ctrl *ApiContext[T]) Bind() error {
 	return ctrl.c.ShouldBind(ctrl.Request)
 }
 
@@ -104,12 +110,20 @@ func (ctrl *ApiContext[T]) GetPageAndCount() (page int, count int, err error) {
 
 // NoDataJSON parse with Nodata to json and return
 func (ctrl *ApiContext[T]) NoDataJSON(code respCode.StatusCode, msg ...string) {
-	ctrl.Response.SetNoData(code, msg...)
 	ctrl.c.JSON(http.StatusOK, ctrl.Response)
 }
 
 // WithDataJSON parse with data to json and return
 func (ctrl *ApiContext[T]) WithDataJSON(code respCode.StatusCode, data interface{}) {
-	ctrl.Response.SetWithData(code, data)
+	ctrl.c.JSON(http.StatusOK, ctrl.Response)
+}
+
+func (ctrl *ApiContext[T]) Success(data ...any) {
+	ctrl.Response.Success(data...)
+	ctrl.c.JSON(http.StatusOK, ctrl.Response)
+}
+
+func (ctrl *ApiContext[T]) Fail(err *bizerr.BizErr) {
+	ctrl.Response.Fail(err)
 	ctrl.c.JSON(http.StatusOK, ctrl.Response)
 }

@@ -1,12 +1,16 @@
 package service
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/constant"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/entity"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/valobj"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/repository"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/service/vo"
+	"github.com/Agriculture-Develop/agriculturebd/infrastructure/common/bizcode"
+	"github.com/Agriculture-Develop/agriculturebd/infrastructure/common/bizerr"
 
 	"github.com/Agriculture-Develop/agriculturebd/domain/common/respCode"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/random"
@@ -17,7 +21,7 @@ import (
 )
 
 type IAuthSvc interface {
-	LoginByPassword(username, password string) (respCode.StatusCode, vo.LoginSvcVo)
+	LoginByPassword(ctx context.Context, username, password string) (vo.LoginSvcVo, *bizerr.BizErr)
 	LoginByCode(phone, code string) (respCode.StatusCode, vo.LoginSvcVo)
 	Register(password, phone, code string) respCode.StatusCode
 	SendPhoneCode(phone string) respCode.StatusCode
@@ -28,45 +32,45 @@ type Svc struct {
 	dig.In
 	Repo     repository.IAuthRepo
 	SmsUtils repository.ISMSUtils
+	biz      bizerr.Biz
 }
 
 func NewAuthSvc(r repository.IAuthRepo, sms repository.ISMSUtils) IAuthSvc {
-	return &Svc{Repo: r, SmsUtils: sms}
+	return &Svc{Repo: r, SmsUtils: sms, biz: bizerr.NewBiz("auth")}
 }
 
-func (a *Svc) LoginByPassword(phone, password string) (respCode.StatusCode, vo.LoginSvcVo) {
+func (a *Svc) LoginByPassword(ctx context.Context, phone, password string) (vo.LoginSvcVo, *bizerr.BizErr) {
 	// 0. 验证参数
 	if !entity.CheckPhone(phone) || !entity.CheckPassword(password) {
-		return respCode.InvalidParamsFormat, vo.LoginSvcVo{}
+		return vo.LoginSvcVo{}, a.biz.CodeErr(bizcode.InvalidParams, fmt.Errorf("用户名或密码错误"))
 	}
 
 	// 1. 获取用户信息
 	user, err := a.Repo.GetUserByPhone(phone)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) || user.ID == 0 {
-			return respCode.UserNotExist, vo.LoginSvcVo{}
+			return vo.LoginSvcVo{}, a.biz.CodeErr(bizcode.RecordNotFound)
 		} else {
-			zap.L().Error("CheckPassword fail", zap.Error(err))
-			return respCode.ServerBusy, vo.LoginSvcVo{}
+			return vo.LoginSvcVo{}, a.biz.CodeErr(bizcode.RecordNotFound).Log(ctx, "CheckPassword fail")
 		}
 	}
 
 	// 2. 验证密码
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return respCode.InvalidPassword, vo.LoginSvcVo{}
+	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return vo.LoginSvcVo{}, a.biz.CodeErr(bizcode.BadRequest, fmt.Errorf("用户密码错误"))
 	}
 
 	// 3. 生成token
 	token, err := a.Repo.GenerateToken(user.ID, user.Role.Int())
 	if err != nil {
-		return respCode.ServerBusy, vo.LoginSvcVo{}
+		return vo.LoginSvcVo{}, a.biz.CodeErr(bizcode.ServerBusy).Log(ctx, "GenerateToken fail")
 	}
 
-	return respCode.Success, vo.LoginSvcVo{
+	return vo.LoginSvcVo{
 		Id:    user.ID,
 		Token: token,
 		Role:  user.Role.Desc(),
-	}
+	}, nil
 }
 
 func (a *Svc) LoginByCode(phone, code string) (respCode.StatusCode, vo.LoginSvcVo) {
