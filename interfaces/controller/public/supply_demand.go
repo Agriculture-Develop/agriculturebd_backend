@@ -192,6 +192,7 @@ func (c *SupplyDemandCtrl) GetCommentList(ctx *gin.Context) {
 			Comment:       item.Comment,
 			Role:          item.Role,
 			Like:          item.Like,
+			UserId:        item.UserId,
 			CreatedAt:     item.CreatedAt,
 		})
 	}

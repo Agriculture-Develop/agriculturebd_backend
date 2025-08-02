@@ -114,6 +114,7 @@ func (s *SupplyDemandCommentSvc) ListComments(supplyDemandID int64) (respCode.St
 			Comment:       item.CommentContent,
 			Role:          valobj.UserRole(user.Role).Desc(),
 			Like:          strconv.Itoa(item.LikeCount),
+			UserId:        uint(item.UserID),
 			CreatedAt:     item.CreatedAt.Format("2006-01-02 15:04:05"),
 		})
 	}
