@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/json"
 	"errors"
 	"github.com/Agriculture-Develop/agriculturebd/domain/common/respCode"
 	"github.com/Agriculture-Develop/agriculturebd/domain/news/entity"
@@ -11,7 +10,6 @@ import (
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/upload"
 	"go.uber.org/dig"
 	"go.uber.org/zap"
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -53,31 +51,17 @@ func (s *NewsSvc) CreateNews(dto dto.NewsCreateSvcDTO) respCode.StatusCode {
 		return respCode.ServerBusy
 	}
 
-	// 2. 转换关键词为JSON
-	keywordJSON, err := json.Marshal(dto.Keyword)
-	if err != nil {
-		zap.L().Error("Marshal keyword fail", zap.Error(err))
-		return respCode.ServerBusy
-	}
-
-	// 3. 转换URL为JSON
-	filesURLJSON, err := json.Marshal(dto.FilesURL)
-	if err != nil {
-		zap.L().Error("Marshal files_url fail", zap.Error(err))
-		return respCode.ServerBusy
-	}
-
 	// 4. 创建新闻实体
 	news := &entity.News{
 		Title:      dto.Title,
 		CategoryID: dto.CategoryID,
 		Abstract:   dto.Abstract,
-		Keyword:    datatypes.JSON(keywordJSON),
+		Keyword:    dto.Keyword,
 		Source:     dto.Source,
 		Content:    dto.Content,
 		Type:       entity.NewsType(dto.Type),
 		Status:     entity.NewsStatus(dto.Status),
-		FilesURL:   filesURLJSON,
+		FilesURL:   dto.FilesURL,
 		CoverURL:   dto.CoverURL,
 		UserID:     dto.UserID,
 	}
@@ -124,18 +108,6 @@ func (s *NewsSvc) UpdateNews(id uint, dto dto.NewsUpdateSvcDTO) respCode.StatusC
 		}
 	}
 
-	// 4. 删除旧文件
-	if news.FilesURL != nil {
-		var oldFiles []string
-		if err := json.Unmarshal(news.FilesURL, &oldFiles); err == nil {
-			for _, file := range oldFiles {
-				if err := upload.DeleteFile(file, "news"); err != nil {
-					zap.L().Warn("Delete old file fail", zap.String("file", file), zap.Error(err))
-				}
-			}
-		}
-	}
-
 	// 5. 全量字段更新
 	news.Title = dto.Title
 	news.CategoryID = dto.CategoryID
@@ -146,30 +118,8 @@ func (s *NewsSvc) UpdateNews(id uint, dto dto.NewsUpdateSvcDTO) respCode.StatusC
 	news.CoverURL = dto.CoverURL
 	news.Status = entity.NewsStatus(dto.Status)
 	news.UserID = dto.UserID
-
-	// 6. 更新关键词
-	if dto.Keyword != nil {
-		keywordJSON, err := json.Marshal(dto.Keyword)
-		if err != nil {
-			zap.L().Error("Marshal keyword fail", zap.Error(err))
-			return respCode.ServerBusy
-		}
-		news.Keyword = keywordJSON
-	} else {
-		news.Keyword = []byte("[]")
-	}
-
-	// 7. 更新文件URL
-	if dto.FilesURL != nil {
-		filesURLJSON, err := json.Marshal(dto.FilesURL)
-		if err != nil {
-			zap.L().Error("Marshal files_url fail", zap.Error(err))
-			return respCode.ServerBusy
-		}
-		news.FilesURL = filesURLJSON
-	} else {
-		news.FilesURL = []byte("[]")
-	}
+	news.FilesURL = dto.FilesURL
+	news.Keyword = dto.Keyword
 
 	// 8. 保存更新
 	if err := s.NewsRepo.Update(news); err != nil {
@@ -233,26 +183,8 @@ func (s *NewsSvc) GetNewsDetail(id uint) (respCode.StatusCode, *vo.NewsDetailSvc
 		return respCode.ServerBusy, nil
 	}
 
-	// 3. 解析关键词
-	var keywords []string
-	if news.Keyword != nil {
-		if err := json.Unmarshal(news.Keyword, &keywords); err != nil {
-			zap.L().Error("Unmarshal keyword fail", zap.Error(err))
-			return respCode.ServerBusy, nil
-		}
-	}
-
 	// 获取用户作者信息
 	author, err := s.NewsRepo.GetAuthorByID(news.UserID)
-
-	// 4. 解析文件URL
-	var filesURL []string
-	if news.FilesURL != nil {
-		if err := json.Unmarshal(news.FilesURL, &filesURL); err != nil {
-			zap.L().Error("Unmarshal files_url fail", zap.Error(err))
-			return respCode.ServerBusy, nil
-		}
-	}
 
 	// 5. 构建返回VO
 	newsVO := &vo.NewsDetailSvcVO{
@@ -261,11 +193,11 @@ func (s *NewsSvc) GetNewsDetail(id uint) (respCode.StatusCode, *vo.NewsDetailSvc
 		CategoryID: news.CategoryID,
 		Category:   category.Name,
 		Abstract:   news.Abstract,
-		Keyword:    keywords,
+		Keyword:    news.Keyword,
 		Source:     news.Source,
 		Content:    news.Content,
 		CoverURL:   news.CoverURL,
-		FilesURL:   filesURL,
+		FilesURL:   news.FilesURL,
 		Status:     string(news.Status),
 		Author:     author,
 		Type:       string(news.Type),
@@ -318,27 +250,10 @@ func (s *NewsSvc) ListNews(filter dto.NewsListFilterSvcDTO) (respCode.StatusCode
 	// 6. 转换为VO
 	newsVOs := make([]vo.NewsDetailSvcVO, 0, len(newsList))
 	for _, news := range newsList {
-		// 解析关键词
-		var keywords []string
-		if news.Keyword != nil {
-			if err := json.Unmarshal(news.Keyword, &keywords); err != nil {
-				zap.L().Error("Unmarshal keyword fail", zap.Error(err))
-				continue
-			}
-		}
 
 		// 获取用户作者信息
 		var author string
 		author, err = s.NewsRepo.GetAuthorByID(news.UserID)
-
-		// 解析文件URL
-		var filesURL []string
-		if news.FilesURL != nil {
-			if err := json.Unmarshal(news.FilesURL, &filesURL); err != nil {
-				zap.L().Error("Unmarshal files_url fail", zap.Error(err))
-				continue
-			}
-		}
 
 		newsVO := vo.NewsDetailSvcVO{
 			ID:         news.ID,
@@ -346,11 +261,11 @@ func (s *NewsSvc) ListNews(filter dto.NewsListFilterSvcDTO) (respCode.StatusCode
 			CategoryID: news.CategoryID,
 			Category:   categoryMap[news.CategoryID],
 			Abstract:   news.Abstract,
-			Keyword:    keywords,
+			Keyword:    news.Keyword,
 			Source:     news.Source,
 			Content:    news.Content,
 			CoverURL:   news.CoverURL,
-			FilesURL:   filesURL,
+			FilesURL:   news.FilesURL,
 			Status:     string(news.Status),
 			Author:     author,
 			Type:       string(news.Type),
@@ -388,14 +303,7 @@ func (s *NewsSvc) DeleteNews(id uint) respCode.StatusCode {
 		}
 	}
 
-	var filesURL []string
-	if news.FilesURL != nil {
-		if err := json.Unmarshal(news.FilesURL, &filesURL); err != nil {
-			zap.L().Error("Unmarshal files_url fail", zap.Error(err))
-		}
-	}
-
-	for _, fileURL := range filesURL {
+	for _, fileURL := range news.FilesURL {
 		err := upload.DeleteFile(fileURL, "news")
 		if err != nil {
 			return respCode.ServerBusy

@@ -20,18 +20,15 @@ func NewNewsRepo(db *gorm.DB) repository.INewsRepo {
 }
 
 func (r *NewsRepo) Create(news *entity.News) error {
-	keywordJSON, _ := json.Marshal(news.Keyword)
-	filesURLJSON, _ := json.Marshal(news.FilesURL)
-
 	dbNews := &model.News{
 		Title:      news.Title,
 		Abstract:   news.Abstract,
-		Keyword:    datatypes.JSON(keywordJSON),
+		Keyword:    news.Keyword,
 		Source:     news.Source,
 		Content:    news.Content,
 		Status:     string(news.Status),
 		Comment:    news.Comment,
-		FilesURL:   datatypes.JSON(filesURLJSON),
+		FilesURL:   news.FilesURL,
 		CoverURL:   news.CoverURL,
 		UserID:     news.UserID,
 		CategoryID: news.CategoryID,

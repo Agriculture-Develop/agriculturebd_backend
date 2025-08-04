@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/json"
 	"errors"
 	userRepo "github.com/Agriculture-Develop/agriculturebd/domain/user/repository"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/upload"
@@ -14,7 +13,6 @@ import (
 	"github.com/Agriculture-Develop/agriculturebd/domain/supply_demand/service/vo"
 	"go.uber.org/dig"
 	"go.uber.org/zap"
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -35,19 +33,12 @@ func (s *SupplyDemandSvc) CreateSupplyDemand(dto dto.SupplyDemandCreateSvcDTO) r
 		return respCode.InvalidParamsFormat
 	}
 
-	// 2. 转换文件URL为JSON
-	filesURLJSON, err := json.Marshal(dto.FilesURL)
-	if err != nil {
-		zap.L().Error("Marshal files_url fail", zap.Error(err))
-		return respCode.ServerBusy
-	}
-
 	// 3. 创建供需实体
 	supplyDemand := &entity.SupplyDemand{
 		Title:    dto.Title,
 		Content:  dto.Content,
 		CoverURL: dto.CoverURL,
-		FilesURL: datatypes.JSON(filesURLJSON),
+		FilesURL: dto.FilesURL,
 		TagName:  dto.TagName,
 		TagPrice: dto.TagPrice,
 		TagWeigh: dto.TagWeigh,
@@ -75,15 +66,6 @@ func (s *SupplyDemandSvc) GetSupplyDemandDetail(id uint) (respCode.StatusCode, *
 		return respCode.ServerBusy, nil
 	}
 
-	// 2. 解析文件URL
-	var filesURL []string
-	if supplyDemand.FilesURL != nil {
-		if err := json.Unmarshal(supplyDemand.FilesURL, &filesURL); err != nil {
-			zap.L().Error("Unmarshal files_url fail", zap.Error(err))
-			return respCode.ServerBusy, nil
-		}
-	}
-
 	u, err := s.UserRepo.GetUserById(supplyDemand.UserId)
 	if err != nil {
 		zap.L().Error("GetUserById fail", zap.Error(err))
@@ -97,7 +79,7 @@ func (s *SupplyDemandSvc) GetSupplyDemandDetail(id uint) (respCode.StatusCode, *
 		Title:         supplyDemand.Title,
 		Content:       supplyDemand.Content,
 		CoverURL:      supplyDemand.CoverURL,
-		FilesURL:      filesURL,
+		FilesURL:      supplyDemand.FilesURL,
 		PublisherName: u.Nickname,
 		CreatedAt:     supplyDemand.CreatedAt.Format("2006-01-02 15:04:05"),
 		Like:          strconv.Itoa(supplyDemand.Likes),
@@ -192,14 +174,7 @@ func (s *SupplyDemandSvc) DeleteSupplyDemand(userid, id uint) respCode.StatusCod
 		}
 	}
 
-	var filesURL []string
-	if demand.FilesURL != nil {
-		if err := json.Unmarshal(demand.FilesURL, &filesURL); err != nil {
-			zap.L().Error("Unmarshal files_url fail", zap.Error(err))
-		}
-	}
-
-	for _, fileURL := range filesURL {
+	for _, fileURL := range demand.FilesURL {
 		err := upload.DeleteFile(fileURL, "good")
 		if err != nil {
 			zap.L().Warn("Delete file fail", zap.Error(err))

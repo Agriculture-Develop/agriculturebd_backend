@@ -3,7 +3,6 @@ package entity
 import (
 	"time"
 
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -15,10 +14,10 @@ type SupplyDemand struct {
 	TagName  string `json:"tag_name"`
 	TagPrice string `json:"tag_price"`
 
-	CoverURL string         `json:"cover_url"`
-	FilesURL datatypes.JSON `json:"files_url"`
-	Likes    int            `json:"like"`
-	UserId   uint           `json:"user_id"`
+	CoverURL string   `json:"cover_url"`
+	FilesURL []string `json:"files_url"`
+	Likes    int      `json:"like"`
+	UserId   uint     `json:"user_id"`
 
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`

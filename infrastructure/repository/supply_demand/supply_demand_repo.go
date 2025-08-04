@@ -22,12 +22,17 @@ func NewSupplyDemandRepo(db *gorm.DB) repository.ISupplyDemandRepo {
 // Create 创建供需
 func (r *SupplyDemandRepo) Create(supplyDemand *entity.SupplyDemand) error {
 	// 转换为DAO模型
+
+	tag := model.TagInfo{
+		Name:  supplyDemand.TagName,
+		Price: supplyDemand.TagPrice,
+		Weigh: supplyDemand.TagWeigh,
+	}
+
 	daoModel := &model.SupplyDemand{
 		Title:    supplyDemand.Title,
 		Content:  supplyDemand.Content,
-		TagName:  supplyDemand.TagName,
-		TagPrice: supplyDemand.TagPrice,
-		TagWeigh: supplyDemand.TagWeigh,
+		Tag:      tag,
 		CoverURL: supplyDemand.CoverURL,
 		FilesURL: supplyDemand.FilesURL,
 		Likes:    supplyDemand.Likes,
@@ -56,9 +61,9 @@ func (r *SupplyDemandRepo) GetByID(id uint) (*entity.SupplyDemand, error) {
 		ID:        daoModel.ID,
 		Title:     daoModel.Title,
 		Content:   daoModel.Content,
-		TagName:   daoModel.TagName,
-		TagPrice:  daoModel.TagPrice,
-		TagWeigh:  daoModel.TagWeigh,
+		TagName:   daoModel.Tag.Name,
+		TagPrice:  daoModel.Tag.Price,
+		TagWeigh:  daoModel.Tag.Weigh,
 		CoverURL:  daoModel.CoverURL,
 		FilesURL:  daoModel.FilesURL,
 		Likes:     daoModel.Likes,
@@ -102,9 +107,9 @@ func (r *SupplyDemandRepo) List(filter repository.SupplyDemandListFilter) ([]*en
 			ID:       daoModel.ID,
 			Title:    daoModel.Title,
 			Content:  daoModel.Content,
-			TagName:  daoModel.TagName,
-			TagPrice: daoModel.TagPrice,
-			TagWeigh: daoModel.TagWeigh,
+			TagName:  daoModel.Tag.Name,
+			TagPrice: daoModel.Tag.Price,
+			TagWeigh: daoModel.Tag.Weigh,
 
 			CoverURL:  daoModel.CoverURL,
 			FilesURL:  daoModel.FilesURL,
