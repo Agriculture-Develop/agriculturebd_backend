@@ -126,6 +126,9 @@ func (r *NewsRepo) List(filter repository.NewsListFilter) ([]*entity.News, int64
 			CategoryID:  n.CategoryID,
 			PublishedAt: n.PublishedAt,
 			CreatedAt:   n.CreatedAt,
+			FilesURL:    n.FilesURL,
+			Comment:     n.Comment,
+			CoverURL:    n.CoverURL,
 		})
 	}
 
