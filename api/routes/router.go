@@ -1,10 +1,17 @@
 package routes
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"github.com/Agriculture-Develop/agriculturebd/api/routes/public"
 	"github.com/Agriculture-Develop/agriculturebd/interfaces/controller/middleware"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/Agriculture-Develop/agriculturebd/api/config"
 	"github.com/Agriculture-Develop/agriculturebd/api/routes/Interface"
@@ -30,12 +37,7 @@ func Router() {
 	registerRoute(r)
 
 	// 启动服务
-	addr := fmt.Sprintf("%s:%d", apiConf.Host, apiConf.Post)
-	fmt.Printf("服务在%s上成功启动", addr)
-	err := r.Run(addr)
-	if err != nil {
-		fmt.Println(err)
-	}
+	gracefulRun(fmt.Sprintf("%s:%d", apiConf.Host, apiConf.Post), r)
 }
 
 func registerRoute(r *gin.Engine) *gin.Engine {
@@ -72,4 +74,32 @@ func registerRoute(r *gin.Engine) *gin.Engine {
 	r.StaticFS(apiConf.BaseUrl+"/files", http.Dir(config.Get().Api.StaticPath))
 
 	return r
+}
+
+func gracefulRun(addr string, handler http.Handler) {
+	srv := &http.Server{
+		Addr:    addr,
+		Handler: handler,
+	}
+
+	// 启动服务
+	go func() {
+		log.Printf("Server is running at %s\n", addr)
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Println("Shutting down server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Server forced to shutdown:", err)
+	}
+
+	log.Println("Server exiting")
 }
