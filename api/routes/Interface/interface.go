@@ -8,7 +8,8 @@ type IUserCtrl interface {
 	GetUserList(c *gin.Context)
 	DeleteUser(c *gin.Context)
 	GetUserDetail(c *gin.Context)
-	UpdateUserAvatar(c *gin.Context)
+	UploadFile(c *gin.Context)
+	DeleteFile(c *gin.Context)
 }
 
 type IAuthCtrl interface {

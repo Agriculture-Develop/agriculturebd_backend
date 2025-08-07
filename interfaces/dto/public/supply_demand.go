@@ -1,16 +1,14 @@
 package public
 
-import "mime/multipart"
-
 // SupplyDemandCreateCtrlDTO 创建供需请求
 type SupplyDemandCreateCtrlDTO struct {
-	Title    string                  `form:"title" binding:"required"`
-	Content  string                  `form:"content" binding:"required"`
-	Cover    *multipart.FileHeader   `form:"cover" binding:"required"`
-	Files    []*multipart.FileHeader `form:"files"`
-	TagName  string                  `form:"tag_name"`
-	TagPrice string                  `form:"tag_price"`
-	TagWeigh string                  `form:"tag_weigh"`
+	Title    string   `form:"title" binding:"required"`
+	Content  string   `form:"content" binding:"required"`
+	Cover    string   `form:"cover" binding:"required"`
+	Files    []string `form:"files"`
+	TagName  string   `form:"tag_name"`
+	TagPrice string   `form:"tag_price"`
+	TagWeigh string   `form:"tag_weigh"`
 }
 
 // SupplyDemandListFilterCtrlDTO 供需列表筛选请求

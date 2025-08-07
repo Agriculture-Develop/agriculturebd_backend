@@ -118,25 +118,12 @@ func (c *SupplyDemandCtrl) CreateSupplyDemand(ctx *gin.Context) {
 		return
 	}
 
-	// 文件上传处理
-	coverURL, err := c.UploadSvc.UploadFile(apiCtx.Request.Cover, "good")
-	if err != nil {
-		apiCtx.NoDataJSON(respCode.InvalidParams, err.Error())
-		return
-	}
-
-	filesURL, err := c.UploadSvc.UploadFiles(apiCtx.Request.Files, "good")
-	if err != nil {
-		apiCtx.NoDataJSON(respCode.InvalidParams, err.Error())
-		return
-	}
-
 	// DTO 转换
 	dto := svcDto.SupplyDemandCreateSvcDTO{
 		Title:    apiCtx.Request.Title,
 		Content:  apiCtx.Request.Content,
-		CoverURL: coverURL,
-		FilesURL: filesURL,
+		CoverURL: apiCtx.Request.Cover,
+		FilesURL: apiCtx.Request.Files,
 		TagName:  apiCtx.Request.TagName,
 		TagPrice: apiCtx.Request.TagPrice,
 		TagWeigh: apiCtx.Request.TagWeigh,

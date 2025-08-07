@@ -103,20 +103,29 @@ func (c *Ctrl) GetUserDetail(ctx *gin.Context) {
 
 }
 
-func (c *Ctrl) UpdateUserAvatar(ctx *gin.Context) {
+func (c *Ctrl) UploadFile(ctx *gin.Context) {
 
 	apiCtx := controller.NewAPiContext[struct{}](ctx)
-	id := apiCtx.GetUserIdByToken()
+	types := ctx.Param("types")
 
 	// 从表单中获取头像
-	file, err := ctx.FormFile("avatar")
+	file, err := ctx.FormFile("file")
 	if err != nil {
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
 		return
 	}
 
-	code := c.Services.UpdateUserAvatar(id, file)
+	code, path := c.Services.UploadFile(types, file)
 
+	apiCtx.WithDataJSON(code, map[string]string{"name": path})
+}
+
+func (c *Ctrl) DeleteFile(ctx *gin.Context) {
+	apiCtx := controller.NewAPiContext[struct{}](ctx)
+	types := ctx.Param("types")
+	filePath := ctx.Param("name")
+
+	code := c.Services.DeleteFile(types, filePath)
 	apiCtx.NoDataJSON(code)
 }
 

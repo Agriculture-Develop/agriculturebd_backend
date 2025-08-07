@@ -11,7 +11,11 @@ func UserModels(r *gin.RouterGroup, ctrl Interface.IUserCtrl) {
 	{
 		userGroup.GET("", ctrl.GetUserDetail)
 		userGroup.PUT("", ctrl.UpdateUserInfoByUser)
-		userGroup.POST("/avatar", ctrl.UpdateUserAvatar)
 	}
 
+	fileGroup := r.Group("/files", middleware.Auth())
+	{
+		fileGroup.POST("/:types", ctrl.UploadFile)
+		fileGroup.DELETE("/:types/:name", ctrl.DeleteFile)
+	}
 }
