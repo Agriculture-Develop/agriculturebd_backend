@@ -113,7 +113,7 @@ func (c *SupplyDemandCtrl) GetSupplyDemandDetail(ctx *gin.Context) {
 func (c *SupplyDemandCtrl) CreateSupplyDemand(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[ctrlDto.SupplyDemandCreateCtrlDTO](ctx)
 
-	if err := apiCtx.BindForm(); err != nil {
+	if err := apiCtx.BindJSON(); err != nil {
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
 		return
 	}

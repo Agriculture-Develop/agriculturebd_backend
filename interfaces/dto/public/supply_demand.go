@@ -2,13 +2,13 @@ package public
 
 // SupplyDemandCreateCtrlDTO 创建供需请求
 type SupplyDemandCreateCtrlDTO struct {
-	Title    string   `form:"title" binding:"required"`
-	Content  string   `form:"content" binding:"required"`
-	Cover    string   `form:"cover" binding:"required"`
-	Files    []string `form:"files"`
-	TagName  string   `form:"tag_name"`
-	TagPrice string   `form:"tag_price"`
-	TagWeigh string   `form:"tag_weigh"`
+	Title    string   `json:"title" binding:"required"`
+	Content  string   `json:"content" binding:"required"`
+	Cover    string   `json:"cover" binding:"required"`
+	Files    []string `json:"files"`
+	TagName  string   `json:"tag_name"`
+	TagPrice string   `json:"tag_price"`
+	TagWeigh string   `json:"tag_weigh"`
 }
 
 // SupplyDemandListFilterCtrlDTO 供需列表筛选请求
