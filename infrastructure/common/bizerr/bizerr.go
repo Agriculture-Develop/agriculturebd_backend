@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/common/bizcode"
-	"github.com/Agriculture-Develop/agriculturebd/infrastructure/logs"
 	"go.uber.org/zap"
 	"runtime"
 )
@@ -73,22 +72,23 @@ func (e *BizErr) Logf(ctx context.Context, format string, args ...any) *BizErr {
 }
 
 func (e *BizErr) logger(_ context.Context, file string, line int, msg string) {
-	logs.Logger.With(
+	zap.L().With(
+		zap.Int("biz_code", int(e.Code)),
+		zap.String("error", e.Err.Error()),
 		zap.String("service_name", e.ServiceName),
 		zap.String("file", file),
 		zap.Int("line", line),
-		zap.Int("code", int(e.Code)),
-		zap.String("error", e.Err.Error()),
-	).Error("%s: %s", msg, e.Err.Error())
+	).Error(msg)
+
 }
 
-// TODO : add trace
 func (e *BizErr) loggerWithTrace(ctx context.Context, file string, line int, msg string) {
-	logs.Logger.With(
+	zap.L().With(
+		zap.Int("biz_code", int(e.Code)),
+		zap.String("error", e.Err.Error()),
 		zap.String("service_name", e.ServiceName),
 		zap.String("file", file),
 		zap.Int("line", line),
-		zap.Int("code", int(e.Code)),
-		zap.String("error", e.Err.Error()),
-	).Error("%s: %s", msg, e.Err.Error())
+	).Error(msg)
+
 }

@@ -23,8 +23,8 @@ func Router() {
 	// gin模式
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-
-	r.Use(middleware.GinLogger(), middleware.GinRecovery(true), middleware.CORS())
+	gin.Default()
+	r.Use(middleware.ZapLogger(), middleware.ZapRecovery(true), middleware.CORS())
 
 	// 注册添加路由
 	registerRoute(r)

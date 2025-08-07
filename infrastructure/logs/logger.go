@@ -9,8 +9,6 @@ import (
 	"os"
 )
 
-var Logger *zap.SugaredLogger
-
 func Init() {
 
 	LogConf := config.Get().Log
@@ -44,9 +42,7 @@ func Init() {
 	}
 
 	// 创建 logger 对象
-	zLogger := zap.New(core, zap.AddCaller())
-
-	Logger = zLogger.Sugar()
+	zLogger := zap.New(core)
 	zap.ReplaceGlobals(zLogger)
 }
 
@@ -60,8 +56,6 @@ func getEncoder() zapcore.Encoder {
 	encoderConfig.TimeKey = "time"
 	// 级别
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
-	// 显示调用者信息
-	encoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
 	return zapcore.NewJSONEncoder(encoderConfig)
 }
 

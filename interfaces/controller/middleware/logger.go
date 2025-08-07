@@ -1,31 +1,39 @@
 package middleware
 
 import (
+	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
-	"time"
+	"regexp"
 )
 
-// GinLogger  用于替换gin框架的Logger中间件，因为传入参数，再包一层
-func GinLogger() gin.HandlerFunc {
-	logger := zap.L()
-	return func(c *gin.Context) {
-		start := time.Now()
-		path := c.Request.URL.Path
-		query := c.Request.URL.RawQuery
+// ZapLogger returns a gin middleware that logs request in a structured format.
+func ZapLogger() gin.HandlerFunc {
+	return ginzap.GinzapWithConfig(zap.L(), &ginzap.Config{
 
-		c.Next()
+		// 跳过路径
+		SkipPathRegexps: []*regexp.Regexp{
+			regexp.MustCompile(`^/health/?$`),
+			regexp.MustCompile(`^/metrics/?$`),
+			regexp.MustCompile(`^/ping/?$`),
+		},
 
-		cost := time.Since(start)
-		logger.Info(path,
-			zap.Int("status", c.Writer.Status()),
-			zap.String("method", c.Request.Method),
-			zap.String("path", path),
-			zap.String("query", query),
-			zap.String("ip", c.ClientIP()),
-			zap.String("user-agent", c.Request.UserAgent()),
-			zap.String("errors", c.Errors.ByType(gin.ErrorTypePrivate).String()),
-			zap.Duration("cost", cost),
-		)
-	}
+		// 额外封装信息
+		Context: func(c *gin.Context) []zap.Field {
+			fields := []zap.Field{
+				zap.String("service_name", "gateway"),
+			}
+
+			// trace 信息（可选）
+			if span := trace.SpanFromContext(c.Request.Context()); span.SpanContext().IsValid() {
+				fields = append(fields,
+					zap.String("trace_id", span.SpanContext().TraceID().String()),
+					zap.String("span_id", span.SpanContext().SpanID().String()),
+				)
+			}
+
+			return fields
+		},
+	})
 }
