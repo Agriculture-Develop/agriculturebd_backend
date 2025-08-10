@@ -55,6 +55,13 @@ func (c *Ctrl) GetUserList(ctx *gin.Context) {
 	})
 }
 
+// GetCurrentUserDetail 获取当前用户详情
+func (c *Ctrl) GetCurrentUserDetail(ctx *gin.Context) {
+	apiCtx := controller.NewAPiContext[struct{}](ctx)
+	code, user := c.Services.GetUserDetail(apiCtx.GetUserIdByToken())
+	apiCtx.WithDataJSON(code, user)
+}
+
 // UpdateUserInfo 更新用户信息
 func (c *Ctrl) UpdateUserInfoByAdmin(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[userDto.UpdateUserInfoCtrlDto](ctx)
@@ -132,7 +139,7 @@ func (c *Ctrl) DeleteFile(ctx *gin.Context) {
 // UpdateUserInfo 更新用户信息
 func (c *Ctrl) UpdateUserInfoByUser(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[userDto.UpdateUserInfoCtrlDtoByUser](ctx)
-	if err := apiCtx.BindForm(); err != nil {
+	if err := apiCtx.BindJSON(); err != nil {
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
 		return
 	}

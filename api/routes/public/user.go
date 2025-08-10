@@ -9,7 +9,8 @@ import (
 func UserModels(r *gin.RouterGroup, ctrl Interface.IUserCtrl) {
 	userGroup := r.Group("/user", middleware.Auth())
 	{
-		userGroup.GET("", ctrl.GetUserDetail)
+		userGroup.GET("/:id", ctrl.GetUserDetail)
+		userGroup.GET("", ctrl.GetCurrentUserDetail)
 		userGroup.PUT("", ctrl.UpdateUserInfoByUser)
 	}
 

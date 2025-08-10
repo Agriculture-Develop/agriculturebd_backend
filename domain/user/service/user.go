@@ -24,7 +24,7 @@ type IUserSvc interface {
 	// 获取用户详情
 	GetUserDetail(userId uint) (respCode.StatusCode, vo.UserSvcVo)
 
-	UpdateUserInfoByUser(userId uint, nickname string, role string, avatar *multipart.FileHeader) respCode.StatusCode
+	UpdateUserInfoByUser(userId uint, nickname string, role string, avatar string) respCode.StatusCode
 
 	UploadFile(types string, file *multipart.FileHeader) (respCode.StatusCode, string)
 	DeleteFile(types, filePath string) respCode.StatusCode
@@ -160,7 +160,7 @@ func (s *Svc) DeleteFile(types, filePath string) respCode.StatusCode {
 	return respCode.Success
 }
 
-func (s *Svc) UpdateUserInfoByUser(userId uint, nickname string, role string, avatar *multipart.FileHeader) respCode.StatusCode {
+func (s *Svc) UpdateUserInfoByUser(userId uint, nickname string, role string, avatar string) respCode.StatusCode {
 	// 1. 获取用户信息
 	user, err := s.Repo.GetUserById(userId)
 	if err != nil {
@@ -171,25 +171,8 @@ func (s *Svc) UpdateUserInfoByUser(userId uint, nickname string, role string, av
 		return respCode.ServerBusy
 	}
 
-	// 更新用户头像
-	if avatar != nil {
-		// 删除旧头像
-		if user.AvatarPath != "" {
-			if err := upload.DeleteFile(user.AvatarPath, "avatar"); err != nil {
-				zap.L().Error("[UploadFile] DeleteFile failed", zap.Error(err))
-				return respCode.ServerBusy
-			}
-		}
-
-		// 上传新头像
-		user.AvatarPath, err = upload.UploadFile(avatar, "avatar")
-		if err != nil {
-			zap.L().Error("[UploadFile] UploadFile failed", zap.Error(err))
-			return respCode.ServerBusy
-		}
-	}
-
 	// 校验参数
+
 	if role != "" && valobj.GetUserRole(role) == valobj.RoleUnknown {
 		return respCode.InvalidParams
 	}
@@ -202,6 +185,10 @@ func (s *Svc) UpdateUserInfoByUser(userId uint, nickname string, role string, av
 	// 2. 更新用户信息
 	if nickname != "" {
 		user.Nickname = nickname
+	}
+
+	if avatar != "" {
+		user.AvatarPath = avatar
 	}
 
 	if role != "" {

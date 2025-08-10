@@ -8,6 +8,7 @@ type IUserCtrl interface {
 	GetUserList(c *gin.Context)
 	DeleteUser(c *gin.Context)
 	GetUserDetail(c *gin.Context)
+	GetCurrentUserDetail(c *gin.Context)
 	UploadFile(c *gin.Context)
 	DeleteFile(c *gin.Context)
 }
