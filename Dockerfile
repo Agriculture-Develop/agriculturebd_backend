@@ -5,6 +5,3 @@ WORKDIR /app
 # 接收架构参数
 ARG TARGETARCH
 COPY bin/${TARGETARCH}/main /app/main
-
-EXPOSE 28080
-CMD ["./main"]
