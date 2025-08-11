@@ -13,7 +13,7 @@ RUN go mod download
 COPY . .
 
 # 编译生成静态二进制文件（禁用CGO，linux amd64）
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /app/main ./main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /app/main ./api/main.go
 
 # 运行阶段
 FROM alpine:latest
