@@ -2,12 +2,11 @@
 #go install github.com/Icemap/yaml2go-cli@latest
 #yaml2go-cli -i api/config/resources/app.yaml -o api/config/generation.go  -p config
 
-# 定义伪常量
-host: &host 127.0.0.1
+
 
 api:
   baseUrl: api/v1
-  host: *host # 本地环境启动
+  host: 0.0.0.0
   post: 28080
   staticPath: ./doc/file
 
@@ -37,11 +36,11 @@ auth:
 
 # ----------------------------------------- Mysql 配置   -------------------------------------------------------
 mysql:
-  host: *host
+  host: mysql
   port: 3306
   dbname: agriculture
-  username:
-  password:
+  username: root
+  password: chen123456
   charset: utf8mb4
 
 

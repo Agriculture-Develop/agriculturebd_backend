@@ -1,0 +1,60 @@
+version: '3.8'
+
+networks:
+  app_network:
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:8.3.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: chen123456
+      MYSQL_DATABASE: agriculture
+
+    volumes:
+      - ./doc/sql:/docker-entrypoint-initdb.d
+      - ./doc/mysql/data:/var/lib/mysql
+    ports:
+      - "23306:3306"
+    networks:
+      - app_network
+
+  backend:
+    image: alpine:latest
+    container_name: backend
+    restart: always
+    working_dir: /app
+    ports:
+      - "28080:28080"
+    volumes:
+      - ./doc/file:/app/doc/file
+      - ./doc/logs:/app/doc/logs
+      - ./api/config/resources:/app/config/resources   # 这里挂载配置目录
+    command:
+      - "./main"
+      - "-cp"
+      - "/app/config/resources/app.yaml"
+      - "-secret-cp"
+      - "/app/config/resources/app_secret.yaml"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_server
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./doc/html:/usr/share/nginx/html/file
+      - ./doc/nginx/conf.d:/etc/nginx/conf.d
+      - ./doc/logs:/var/log/nginx
+    depends_on:
+      - backend
+    networks:
+      - app_network
