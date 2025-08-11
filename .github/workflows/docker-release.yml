@@ -13,6 +13,18 @@ jobs:
         with:
           submodules: 'true'
 
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24
+
+      - name: Build Binaries for All Architectures
+        run: |
+          mkdir -p bin/amd64 bin/arm64 bin/arm
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bin/amd64/main ./api/main.go
+          GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o bin/arm64/main ./api/main.go
+          GOOS=linux GOARCH=arm CGO_ENABLED=0 go build -o bin/arm/main ./api/main.go
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
@@ -28,7 +40,7 @@ jobs:
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
 
-      - name: Build and Push Multi-Arch
+      - name: Build and Push Multi-Arch (No Compile Inside Docker)
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -40,8 +52,5 @@ jobs:
             ${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_NAMESPACE }}/${{ secrets.ALIYUN_REPO_NAME }}:${{ github.sha }}
             ${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_NAMESPACE }}/${{ secrets.ALIYUN_REPO_NAME }}:${{ github.run_number }}
           build-args: |
-            TARGETOS
             TARGETARCH
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           provenance: false
