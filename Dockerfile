@@ -13,7 +13,7 @@ RUN go mod download
 COPY . .
 
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main  ./api/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o main  ./api/main.go
 
 # 运行阶段
 FROM alpine:latest
