@@ -31,6 +31,14 @@ jobs:
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
 
+      - name: Print vars for debug
+        run: |
+          echo "Registry: ${{ secrets.ALIYUN_REGISTRY }}"
+          echo "Namespace: ${{ secrets.ALIYUN_NAMESPACE }}"
+          echo "Repo: ${{ secrets.ALIYUN_REPO_NAME }}"
+
+
+
       - name: Build and Push
         uses: docker/build-push-action@v5
         with:
