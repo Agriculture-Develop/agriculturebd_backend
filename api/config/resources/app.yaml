@@ -3,7 +3,7 @@
 #yaml2go-cli -i api/config/resources/app.yaml -o api/config/generation.go  -p config
 
 # 定义伪常量
-host: &host 127.0.0.1
+host: &host localhost
 
 api:
   baseUrl: api/v1
@@ -37,8 +37,8 @@ auth:
 
 # ----------------------------------------- Mysql 配置   -------------------------------------------------------
 mysql:
-  host: *host
-  port: 3306
+  host: 47.115.160.54
+  port: 23306
   dbname: agriculture
   username:
   password:

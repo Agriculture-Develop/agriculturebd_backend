@@ -14,8 +14,8 @@ const appName = "conf"
 
 var (
 	conf             *Default
-	configPath       = "api/config/resources/app.yaml" // 默认值
-	configSecretPath = "api/config/resources/app_secret.yaml"
+	configPath       string
+	configSecretPath string
 	once             sync.Once
 )
 
@@ -30,8 +30,9 @@ func Init() {
 func (app *Default) InitConfig() {
 
 	vip := viper.New()
-	// 添加命令行参数修改的配置项
+	// 命令行参数绑定
 	flag.StringVar(&configPath, "cp", "api/config/resources/app.yaml", "config path")
+	flag.StringVar(&configSecretPath, "secret-cp", "api/config/resources/app_secret.yaml", "secret config path")
 	flag.Parse()
 
 	// 加载普通配置
