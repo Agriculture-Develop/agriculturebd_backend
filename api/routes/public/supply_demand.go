@@ -16,7 +16,7 @@ func SupplyDemandModels(r *gin.RouterGroup, ctrl Interface.ISupplyDemandCtrl) {
 		goodGroup.DELETE("/:id", ctrl.DeleteSupplyDemand)
 
 		// 评论相关
-		goodGroup.GET("	/:id/comment", ctrl.GetCommentList)  // 获取评论列表
+		goodGroup.GET("/:id/comment", ctrl.GetCommentList)   // 获取评论列表
 		goodGroup.GET("/comment/:id", ctrl.GetCommentDetail) // 获取评论详情
 		goodGroup.POST("/:id/comment", ctrl.CreateComment)   // 创建评论
 		goodGroup.DELETE("/comment/:id", ctrl.DeleteComment) // 删除评论
