@@ -24,4 +24,5 @@ type CommentCreateSvcDTO struct {
 	SupplyDemandID int64  `json:"supply_demand_id"`
 	CommentContent string `json:"comment_content"`
 	UserID         uint   `json:"user_id"`
+	ReplyID        int64  `json:"reply_id"`
 }

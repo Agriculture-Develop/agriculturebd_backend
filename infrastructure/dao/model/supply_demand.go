@@ -30,7 +30,7 @@ type SupplyDemandComment struct {
 	UserID         int64  `gorm:"column:user_id" json:"user_id"`                   // 外键：用户ID
 	CommentContent string `gorm:"column:comment_content" json:"comment_content"`   // 评论内容
 	LikeCount      int    `gorm:"column:like_count" json:"like_count"`             // 点赞数
-	ReplyId        int64  `gorm:"column:reply_id" json:"reply_id"`
+	ReplyId        int64  `gorm:"index;column:reply_id" json:"reply_id"`
 
 	CreatedAt time.Time      `gorm:"column:created_at" json:"created_at"` // 创建时间
 	UpdatedAt time.Time      `gorm:"column:updated_at" json:"updated_at"` // 更新时间

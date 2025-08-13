@@ -160,7 +160,6 @@ func (c *SupplyDemandCtrl) GetCommentList(ctx *gin.Context) {
 
 	code, vo := c.CommentSvc.ListComments(int64(supplyDemandID))
 	if code != respCode.Success {
-		apiCtx := controller.NewAPiContext[struct{}](ctx)
 		apiCtx.NoDataJSON(code)
 		return
 	}
@@ -180,6 +179,7 @@ func (c *SupplyDemandCtrl) GetCommentList(ctx *gin.Context) {
 			Role:          item.Role,
 			Like:          item.Like,
 			UserId:        item.UserId,
+			ReplyId:       item.ReplyId,
 			CreatedAt:     item.CreatedAt,
 		})
 	}
@@ -211,6 +211,7 @@ func (c *SupplyDemandCtrl) GetCommentDetail(ctx *gin.Context) {
 		Comment:       vo.Comment,
 		Role:          vo.Role,
 		Like:          vo.Like,
+		ReplyId:       vo.ReplyId,
 		CreatedAt:     vo.CreatedAt,
 	}
 
@@ -236,6 +237,7 @@ func (c *SupplyDemandCtrl) CreateComment(ctx *gin.Context) {
 		SupplyDemandID: int64(supplyDemandID),
 		CommentContent: apiCtx.Request.Comment,
 		UserID:         apiCtx.GetUserIdByToken(),
+		ReplyID:        apiCtx.Request.ReplyId,
 	}
 
 	code := c.CommentSvc.CreateComment(dto)

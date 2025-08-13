@@ -28,4 +28,6 @@ type ISupplyDemandCommentRepo interface {
 	List(supplyDemandID int64) ([]*entity.SupplyDemandComment, int64, error)
 	// 删除评论
 	Delete(id int64) error
+	// 删除子评论
+	DeleteByParentId(parentId int64) error
 }

@@ -21,4 +21,5 @@ type SupplyDemandListFilterCtrlDTO struct {
 // CommentCreateCtrlDTO 创建评论请求
 type CommentCreateCtrlDTO struct {
 	Comment string `json:"comment" binding:"required"`
+	ReplyId int64  `json:"reply_id"`
 }

@@ -45,6 +45,7 @@ type CommentDetailSvcVO struct {
 	Role          string `json:"role"`
 	Like          string `json:"like"`
 	UserId        uint   `json:"user_id"`
+	ReplyId       int64  `json:"reply_id"`
 	CreatedAt     string `json:"created_at"`
 }
 

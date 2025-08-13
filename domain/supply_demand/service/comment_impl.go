@@ -33,13 +33,27 @@ func (s *SupplyDemandCommentSvc) CreateComment(dto dto.CommentCreateSvcDTO) resp
 		return respCode.InvalidParamsFormat
 	}
 
+	// 判断回复id
+	if dto.ReplyID != 0 && dto.ReplyID != -1 {
+		_, err := s.Repo.GetByID(dto.ReplyID)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return respCode.CommentNotExist
+			}
+			zap.L().Error("GetCommentById fail", zap.Error(err))
+			return respCode.ServerBusy
+		}
+	} else {
+		dto.ReplyID = -1
+	}
+
 	// 2. 创建评论实体
 	comment := &entity.SupplyDemandComment{
 		SupplyDemandID: dto.SupplyDemandID,
 		UserID:         int64(dto.UserID),
 		CommentContent: dto.CommentContent,
 		LikeCount:      0,
-		ReplyId:        -1, // 默认回复ID为0
+		ReplyId:        dto.ReplyID,
 	}
 
 	// 3. 保存到数据库
@@ -78,6 +92,7 @@ func (s *SupplyDemandCommentSvc) GetCommentDetail(id int64) (respCode.StatusCode
 		Comment:       comment.CommentContent,
 		Role:          valobj.UserRole(user.Role).Desc(),
 		Like:          strconv.Itoa(comment.LikeCount),
+		ReplyId:       comment.ReplyId,
 		CreatedAt:     comment.CreatedAt.Format("2006-01-02 15:04:05"),
 	}
 
@@ -87,7 +102,7 @@ func (s *SupplyDemandCommentSvc) GetCommentDetail(id int64) (respCode.StatusCode
 // ListComments 获取评论列表
 func (s *SupplyDemandCommentSvc) ListComments(supplyDemandID int64) (respCode.StatusCode, *vo.CommentListSvcVO) {
 	// 1. 获取评论列表
-	commentList, total, err := s.Repo.List(supplyDemandID)
+	commentList, _, err := s.Repo.List(supplyDemandID)
 	if err != nil {
 		zap.L().Error("ListComments fail", zap.Error(err))
 		return respCode.ServerBusy, nil
@@ -115,13 +130,14 @@ func (s *SupplyDemandCommentSvc) ListComments(supplyDemandID int64) (respCode.St
 			Role:          valobj.UserRole(user.Role).Desc(),
 			Like:          strconv.Itoa(item.LikeCount),
 			UserId:        uint(item.UserID),
+			ReplyId:       item.ReplyId,
 			CreatedAt:     item.CreatedAt.Format("2006-01-02 15:04:05"),
 		})
 	}
 
 	// 3. 构建返回结果
 	result := &vo.CommentListSvcVO{
-		Total: int(total),
+		Total: len(commentVOs),
 		List:  commentVOs,
 	}
 
@@ -150,7 +166,14 @@ func (s *SupplyDemandCommentSvc) DeleteComment(userid, id uint) respCode.StatusC
 		return respCode.Forbidden
 	}
 
-	// 2. 删除评论
+	//2. 删除子评论
+
+	if err := s.Repo.DeleteByParentId(comment.ID); err != nil {
+		zap.L().Error("DeleteComment fail", zap.Error(err))
+		return respCode.ServerBusy
+	}
+
+	//3. 删除评论
 	if err := s.Repo.Delete(int64(id)); err != nil {
 		zap.L().Error("DeleteComment fail", zap.Error(err))
 		return respCode.ServerBusy

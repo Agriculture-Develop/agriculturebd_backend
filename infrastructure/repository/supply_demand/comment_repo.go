@@ -83,7 +83,7 @@ func (r *SupplyDemandCommentRepo) List(supplyDemandID int64) ([]*entity.SupplyDe
 	// 转换为实体列表
 	entities := make([]*entity.SupplyDemandComment, 0, len(daoModels))
 	for _, daoModel := range daoModels {
-		entity := &entity.SupplyDemandComment{
+		e := &entity.SupplyDemandComment{
 			ID:             daoModel.ID,
 			SupplyDemandID: daoModel.SupplyDemandID,
 			UserID:         daoModel.UserID,
@@ -94,7 +94,7 @@ func (r *SupplyDemandCommentRepo) List(supplyDemandID int64) ([]*entity.SupplyDe
 			UpdatedAt:      daoModel.UpdatedAt,
 			DeletedAt:      daoModel.DeletedAt,
 		}
-		entities = append(entities, entity)
+		entities = append(entities, e)
 	}
 
 	return entities, total, nil
@@ -103,4 +103,9 @@ func (r *SupplyDemandCommentRepo) List(supplyDemandID int64) ([]*entity.SupplyDe
 // Delete 删除评论
 func (r *SupplyDemandCommentRepo) Delete(id int64) error {
 	return r.DB.Where("id = ?", id).Delete(&model.SupplyDemandComment{}).Error
+}
+
+// DeleteByParentId 根据父级ID删除
+func (r *SupplyDemandCommentRepo) DeleteByParentId(parentId int64) error {
+	return r.DB.Where("reply_id = ?", parentId).Delete(&model.SupplyDemandComment{}).Error
 }
