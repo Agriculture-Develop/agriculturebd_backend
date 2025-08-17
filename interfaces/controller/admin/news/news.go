@@ -31,22 +31,9 @@ func NewCtrl(srv service.INewsSvc, upload upload.IUploadSvc) Interface.INewsCtrl
 // 提交新闻
 func (c *Ctrl) CreateNews(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[ctrlDto.NewsCreateDTO](ctx)
-	if err := apiCtx.BindForm(); err != nil {
+	if err := apiCtx.BindJSON(); err != nil {
 
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
-		return
-	}
-
-	// 文件校验与上传
-	coverUrl, err := c.UploadSvc.UploadFile(apiCtx.Request.Cover, "news")
-	if err != nil {
-		apiCtx.NoDataJSON(respCode.InvalidParams, err.Error())
-		return
-	}
-
-	filesUrl, err := c.UploadSvc.UploadFiles(apiCtx.Request.Files, "news")
-	if err != nil {
-		apiCtx.NoDataJSON(respCode.InvalidParams, err.Error())
 		return
 	}
 
@@ -59,8 +46,8 @@ func (c *Ctrl) CreateNews(ctx *gin.Context) {
 		Source:     apiCtx.Request.Source,
 		Content:    apiCtx.Request.Content,
 		Type:       apiCtx.Request.Type,
-		CoverURL:   coverUrl,
-		FilesURL:   filesUrl,
+		CoverURL:   apiCtx.Request.Cover,
+		FilesURL:   apiCtx.Request.Files,
 		Status:     apiCtx.Request.Status,
 		UserID:     apiCtx.GetUserIdByToken(),
 	}
@@ -72,26 +59,13 @@ func (c *Ctrl) CreateNews(ctx *gin.Context) {
 // 修改新闻信息
 func (c *Ctrl) UpdateNews(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[ctrlDto.NewsUpdateDTO](ctx)
-	if err := apiCtx.BindForm(); err != nil {
+	if err := apiCtx.BindJSON(); err != nil {
 		log.Println(err)
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
 		return
 	}
 
 	id, _ := apiCtx.GetIdByPath()
-
-	// 文件校验与上传
-	coverUrl, err := c.UploadSvc.UploadFile(apiCtx.Request.Cover, "news")
-	if err != nil {
-		apiCtx.NoDataJSON(respCode.InvalidParams, err.Error())
-		return
-	}
-
-	filesUrl, err := c.UploadSvc.UploadFiles(apiCtx.Request.Files, "news")
-	if err != nil {
-		apiCtx.NoDataJSON(respCode.InvalidParams, err.Error())
-		return
-	}
 
 	// DTO 转换
 	dto := svcDto.NewsUpdateSvcDTO{
@@ -102,8 +76,8 @@ func (c *Ctrl) UpdateNews(ctx *gin.Context) {
 		Source:     apiCtx.Request.Source,
 		Content:    apiCtx.Request.Content,
 		Type:       apiCtx.Request.Type,
-		CoverURL:   coverUrl,
-		FilesURL:   filesUrl,
+		CoverURL:   apiCtx.Request.Cover,
+		FilesURL:   apiCtx.Request.Files,
 		Status:     apiCtx.Request.Status,
 		UserID:     apiCtx.GetUserIdByToken(),
 	}
