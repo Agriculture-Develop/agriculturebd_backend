@@ -1,14 +1,9 @@
 package config
 
-// Default
-type Default struct {
-	Host  string `yaml:"host"`
-	Api   Api    `yaml:"api"`
-	Log   Log    `yaml:"log"`
-	Auth  Auth   `yaml:"auth"`
-	Mysql Mysql  `yaml:"mysql"`
-	Phone Phone  `yaml:"phone"`
-	File  File   `yaml:"file"`
+// File
+type File struct {
+	Path    string `yaml:"path"`
+	MaxSize int    `yaml:"maxSize"`
 }
 
 // Api
@@ -19,52 +14,56 @@ type Api struct {
 	StaticPath string `yaml:"staticPath"`
 }
 
+// Default
+type Default struct {
+	Log   Log    `yaml:"log"`
+	Auth  Auth   `yaml:"auth"`
+	Mysql Mysql  `yaml:"mysql"`
+	Phone Phone  `yaml:"phone"`
+	File  File   `yaml:"file"`
+	Host  string `yaml:"host"`
+	Api   Api    `yaml:"api"`
+}
+
 // Log
 type Log struct {
-	MaxAge     int    `yaml:"maxAge"`
-	MaxBackups int    `yaml:"maxBackups"`
 	MaxSize    int    `yaml:"maxSize"`
 	Mode       string `yaml:"mode"`
 	Level      string `yaml:"level"`
 	Filename   string `yaml:"filename"`
+	MaxAge     int    `yaml:"maxAge"`
+	MaxBackups int    `yaml:"maxBackups"`
 }
 
 // Auth
 type Auth struct {
+	Issuer              string `yaml:"issuer"`
+	RoleCacheExpireTime string `yaml:"roleCacheExpireTime"`
+	PsdErrorLimit       int    `yaml:"psdErrorLimit"`
 	PsdErrorLockTime    string `yaml:"psdErrorLockTime"`
+	RateLimitInterval   string `yaml:"rateLimitInterval"`
 	RateLimitCap        int    `yaml:"rateLimitCap"`
 	JwtExpireTime       string `yaml:"jwtExpireTime"`
 	JwtSecret           string `yaml:"jwtSecret"`
-	RoleCacheExpireTime string `yaml:"roleCacheExpireTime"`
-	PsdErrorLimit       int    `yaml:"psdErrorLimit"`
-	RateLimitInterval   string `yaml:"rateLimitInterval"`
-	Issuer              string `yaml:"issuer"`
-	IsUserExpireTime    string `yaml:"isUserExpireTime"`
 }
 
 // Mysql
 type Mysql struct {
-	Charset  string `yaml:"charset"`
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
 	Dbname   string `yaml:"dbname"`
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
+	Charset  string `yaml:"charset"`
 }
 
 // Phone
 type Phone struct {
-	Endpoint        string `yaml:"endpoint"`
-	SignName        string `yaml:"signName"`
 	ExpirationTime  string `yaml:"expirationTime"`
 	SendInterval    string `yaml:"sendInterval"`
 	AccessKeyId     string `yaml:"accessKeyId"`
 	AccessKeySecret string `yaml:"accessKeySecret"`
 	TemplateCode    string `yaml:"templateCode"`
-}
-
-// File
-type File struct {
-	Path    string `yaml:"path"`
-	MaxSize int64  `yaml:"maxSize"`
+	Endpoint        string `yaml:"endpoint"`
+	SignName        string `yaml:"signName"`
 }

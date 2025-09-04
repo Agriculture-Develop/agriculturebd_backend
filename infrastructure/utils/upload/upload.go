@@ -18,7 +18,7 @@ func CheckFile(file *multipart.FileHeader) error {
 	}
 
 	// 检查文件大小
-	if file.Size > 1024*1024*config.Get().File.MaxSize {
+	if int(file.Size) > 1024*1024*config.Get().File.MaxSize {
 		return errors.New("文件大小超过2MB")
 	}
 

@@ -59,7 +59,7 @@ func (s *NewsSvc) CreateNews(dto dto.NewsCreateSvcDTO) respCode.StatusCode {
 		Keyword:    dto.Keyword,
 		Source:     dto.Source,
 		Content:    dto.Content,
-		Type:       entity.NewsType(dto.Type),
+		Type:       entity.NewsType(dto.Types),
 		Status:     entity.NewsStatus(dto.Status),
 		FilesURL:   dto.FilesURL,
 		CoverURL:   dto.CoverURL,

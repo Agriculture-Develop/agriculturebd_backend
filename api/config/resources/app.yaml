@@ -25,10 +25,9 @@ log:
 
 # ----------------------------------------- Auth 配置   -------------------------------------------------------
 auth:
-   jwtExpireTime: 60m
+   jwtExpireTime: 2d
    jwtSecret: agriculture_access
    issuer: zty
-   isUserExpireTime: 30m
    roleCacheExpireTime: 168h
    psdErrorLimit: 10   # 密码锁定次数
    psdErrorLockTime: 15m
@@ -40,15 +39,15 @@ mysql:
   host: localhost
   port: 3306
   dbname: agriculture
-  username:
-  password:
+  username: ""
+  password: ""
   charset: utf8mb4
 
 
 # ----------------------------------------- 短信服务   -------------------------------------------------------
 phone:
-  accessKeyId:
-  accessKeySecret:
+  accessKeyId: ""
+  accessKeySecret: ""
   templateCode: SMS_478440193
   endpoint: "dysmsapi.aliyuncs.com"
   signName: "逐梦编程"

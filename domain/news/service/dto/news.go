@@ -5,7 +5,7 @@ type NewsCreateSvcDTO struct {
 	Title      string   `json:"title"`
 	CategoryID uint     `json:"category_id"`
 	Abstract   string   `json:"abstract"`
-	Type       string   `json:"types"`
+	Types      string   `json:"types"`
 	Keyword    []string `json:"keyword"`
 	Source     string   `json:"source"`
 	Content    string   `json:"content"`

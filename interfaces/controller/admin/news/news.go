@@ -8,7 +8,6 @@ import (
 	"github.com/Agriculture-Develop/agriculturebd/domain/news/service"
 	svcDto "github.com/Agriculture-Develop/agriculturebd/domain/news/service/dto"
 	"github.com/Agriculture-Develop/agriculturebd/interfaces/controller"
-	dto "github.com/Agriculture-Develop/agriculturebd/interfaces/dto/admin"
 	ctrlDto "github.com/Agriculture-Develop/agriculturebd/interfaces/dto/admin/news"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/dig"
@@ -31,8 +30,8 @@ func NewCtrl(srv service.INewsSvc, upload upload.IUploadSvc) Interface.INewsCtrl
 // 提交新闻
 func (c *Ctrl) CreateNews(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[ctrlDto.NewsCreateDTO](ctx)
-	if err := apiCtx.BindJSON(); err != nil {
 
+	if err := apiCtx.BindJSON(); err != nil {
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
 		return
 	}
@@ -45,9 +44,9 @@ func (c *Ctrl) CreateNews(ctx *gin.Context) {
 		Keyword:    apiCtx.Request.Keyword,
 		Source:     apiCtx.Request.Source,
 		Content:    apiCtx.Request.Content,
-		Type:       apiCtx.Request.Type,
-		CoverURL:   apiCtx.Request.Cover,
-		FilesURL:   apiCtx.Request.Files,
+		Types:      apiCtx.Request.Types,
+		CoverURL:   apiCtx.Request.CoverURL,
+		FilesURL:   apiCtx.Request.FilesURL,
 		Status:     apiCtx.Request.Status,
 		UserID:     apiCtx.GetUserIdByToken(),
 	}
@@ -120,7 +119,7 @@ func (c *Ctrl) GetNewsDetail(ctx *gin.Context) {
 
 // 修改新闻状态
 func (c *Ctrl) UpdateNewsStatus(ctx *gin.Context) {
-	apiCtx := controller.NewAPiContext[dto.NewsStatusUpdateDTO](ctx)
+	apiCtx := controller.NewAPiContext[ctrlDto.NewsStatusUpdateDTO](ctx)
 
 	id, _ := apiCtx.GetIdByPath()
 

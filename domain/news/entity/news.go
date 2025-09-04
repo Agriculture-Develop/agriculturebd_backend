@@ -10,18 +10,18 @@ type NewsStatus string
 type NewsType string
 
 const (
-	StatusDraft       NewsStatus = "draft"       // 未提交
-	StatusReviewing   NewsStatus = "reviewing"   // 审核中
-	StatusApproved    NewsStatus = "approved"    // 审核已通过
-	StatusRejected    NewsStatus = "rejected"    // 审核已驳回
-	StatusUnpublished NewsStatus = "unpublished" // 未发布
-	StatusPublished   NewsStatus = "published"   // 已发布
-	StatusOffline     NewsStatus = "offline"     // 已下线
+	StatusDraft       NewsStatus = "未提交"   // 未提交
+	StatusReviewing   NewsStatus = "审核中"   // 审核中
+	StatusApproved    NewsStatus = "审核已通过" // 审核已通过
+	StatusRejected    NewsStatus = "审核已驳回" // 审核已驳回
+	StatusUnpublished NewsStatus = "未发布"   // 未发布
+	StatusPublished   NewsStatus = "已发布"   // 已发布
+	StatusOffline     NewsStatus = "已下线"   // 已下线
 )
 
 const (
-	TypeNews   NewsType = "news"   // 新闻
-	TypePolicy NewsType = "policy" // 政策
+	TypeNews   NewsType = "新闻" // 新闻
+	TypePolicy NewsType = "政策" // 政策
 )
 
 type News struct {
