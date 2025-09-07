@@ -3,7 +3,7 @@
 #yaml2go-cli -i api/config/resources/app.yaml -o api/config/generation.go  -p config
 
 # 定义伪常量
-host: &host localhost
+host: &host 0.0.0.0
 
 api:
   baseUrl: api/v1

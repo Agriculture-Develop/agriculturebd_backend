@@ -11,7 +11,6 @@ import (
 	ctrlDto "github.com/Agriculture-Develop/agriculturebd/interfaces/dto/admin/news"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/dig"
-	"log"
 )
 
 type Ctrl struct {
@@ -59,7 +58,6 @@ func (c *Ctrl) CreateNews(ctx *gin.Context) {
 func (c *Ctrl) UpdateNews(ctx *gin.Context) {
 	apiCtx := controller.NewAPiContext[ctrlDto.NewsUpdateDTO](ctx)
 	if err := apiCtx.BindJSON(); err != nil {
-		log.Println(err)
 		apiCtx.NoDataJSON(respCode.InvalidParamsFormat)
 		return
 	}
@@ -74,9 +72,9 @@ func (c *Ctrl) UpdateNews(ctx *gin.Context) {
 		Keyword:    apiCtx.Request.Keyword,
 		Source:     apiCtx.Request.Source,
 		Content:    apiCtx.Request.Content,
-		Type:       apiCtx.Request.Type,
-		CoverURL:   apiCtx.Request.Cover,
-		FilesURL:   apiCtx.Request.Files,
+		Type:       apiCtx.Request.Types,
+		CoverURL:   apiCtx.Request.CoverURL,
+		FilesURL:   apiCtx.Request.FilesURL,
 		Status:     apiCtx.Request.Status,
 		UserID:     apiCtx.GetUserIdByToken(),
 	}

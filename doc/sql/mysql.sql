@@ -39,7 +39,7 @@ CREATE TABLE `news` (
                         `keyword` json DEFAULT NULL COMMENT '关键词列表',
                         `source` varchar(100) DEFAULT '' COMMENT '新闻来源',
                         `content` longtext COMMENT '新闻内容',
-                        `status` varchar(20) DEFAULT 'draft' COMMENT '新闻状态',
+                        `status` varchar(20) DEFAULT '未提交' COMMENT '新闻状态',
                         `comment` varchar(255) DEFAULT '' COMMENT '审核批注',
                         `files_url` json DEFAULT NULL COMMENT '新闻图片地址组',
                         `cover_url` varchar(512) DEFAULT '' COMMENT '封面图地址',

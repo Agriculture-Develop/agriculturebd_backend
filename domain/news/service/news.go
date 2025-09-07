@@ -78,7 +78,7 @@ func (s *NewsSvc) CreateNews(dto dto.NewsCreateSvcDTO) respCode.StatusCode {
 // UpdateNews 更新新闻
 func (s *NewsSvc) UpdateNews(id uint, dto dto.NewsUpdateSvcDTO) respCode.StatusCode {
 	// 0. 校验状态参数
-	if dto.Status != string(entity.StatusDraft) && dto.Status != string(entity.StatusReviewing) {
+	if dto.Status != string(entity.StatusDraft) || dto.Status != string(entity.StatusReviewing) {
 		return respCode.InvalidParams
 	}
 
@@ -143,13 +143,13 @@ func (s *NewsSvc) UpdateNewsStatus(id uint, status string) respCode.StatusCode {
 
 	// 2. 验证状态值
 	validStatus := map[string]bool{
-		"draft":       true,
-		"reviewing":   true,
-		"approved":    true,
-		"rejected":    true,
-		"unpublished": true,
-		"published":   true,
-		"offline":     true,
+		"未提交":   true,
+		"审核中":   true,
+		"审核已通过": true,
+		"审核已驳回": true,
+		"未发布":   true,
+		"已发布":   true,
+		"已下线":   true,
 	}
 	if !validStatus[status] {
 		return respCode.InvalidParamsFormat

@@ -20,13 +20,13 @@ type NewsUpdateDTO struct {
 	Title      string   `json:"title" binding:"required"`
 	CategoryID uint     `json:"category_id" binding:"required"`
 	Abstract   string   `json:"abstract"`
-	Type       string   `json:"type"`
+	Types      string   `json:"types"`
 	Keyword    []string `json:"keyword"`
 	Source     string   `json:"source"`
 	Content    string   `json:"content" binding:"required"`
 	Status     string   `json:"status"`
-	Cover      string   `json:"cover" binding:"required"` // 封面图
-	Files      []string `json:"files"`                    // 普通多图
+	CoverURL   string   `json:"cover_url"`
+	FilesURL   []string `json:"files_url"`
 }
 
 // NewsListFilterDTO 新闻列表筛选请求
