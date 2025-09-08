@@ -17,13 +17,13 @@ type NewsCreateDTO struct {
 
 // NewsUpdateDTO 更新新闻请求
 type NewsUpdateDTO struct {
-	Title      string   `json:"title" binding:"required"`
-	CategoryID uint     `json:"category_id" binding:"required"`
+	Title      string   `json:"title"`
+	CategoryID uint     `json:"category_id"`
 	Abstract   string   `json:"abstract"`
 	Types      string   `json:"types"`
 	Keyword    []string `json:"keyword"`
 	Source     string   `json:"source"`
-	Content    string   `json:"content" binding:"required"`
+	Content    string   `json:"content"`
 	Status     string   `json:"status"`
 	CoverURL   string   `json:"cover_url"`
 	FilesURL   []string `json:"files_url"`

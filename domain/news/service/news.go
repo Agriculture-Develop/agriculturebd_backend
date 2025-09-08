@@ -77,11 +77,6 @@ func (s *NewsSvc) CreateNews(dto dto.NewsCreateSvcDTO) respCode.StatusCode {
 
 // UpdateNews 更新新闻
 func (s *NewsSvc) UpdateNews(id uint, dto dto.NewsUpdateSvcDTO) respCode.StatusCode {
-	// 0. 校验状态参数
-	if dto.Status != string(entity.StatusDraft) || dto.Status != string(entity.StatusReviewing) {
-		return respCode.InvalidParams
-	}
-
 	// 1. 获取新闻信息
 	news, err := s.NewsRepo.GetByID(id)
 	if err != nil {
