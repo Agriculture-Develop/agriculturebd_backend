@@ -57,7 +57,7 @@ func WithAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := controller.NewAPiContext[struct{}](c)
 
-		if ctx.GetUserIdByRole() != valobj.RoleUser.Int() {
+		if ctx.GetUserIdByRole() != valobj.RoleAdmin.Int() || ctx.GetUserIdByRole() != valobj.RoleSuperAdmin.Int() {
 			ctx.NoDataJSON(respCode.Forbidden)
 			c.Abort()
 			return
