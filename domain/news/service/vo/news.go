@@ -14,7 +14,7 @@ type NewsDetailSvcVO struct {
 	FilesURL   []string `json:"files_url"`
 	Status     string   `json:"status"`
 	Author     string   `json:"author"`
-	Type       string   `json:"type"`
+	Types      string   `json:"types"`
 	CreatedAt  string   `json:"created_at"`
 	UpdatedAt  string   `json:"updated_at"`
 }

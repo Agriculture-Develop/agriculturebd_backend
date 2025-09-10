@@ -195,7 +195,7 @@ func (s *NewsSvc) GetNewsDetail(id uint) (respCode.StatusCode, *vo.NewsDetailSvc
 		FilesURL:   news.FilesURL,
 		Status:     string(news.Status),
 		Author:     author,
-		Type:       string(news.Type),
+		Types:      string(news.Type),
 		CreatedAt:  news.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt:  news.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
@@ -263,7 +263,7 @@ func (s *NewsSvc) ListNews(filter dto.NewsListFilterSvcDTO) (respCode.StatusCode
 			FilesURL:   news.FilesURL,
 			Status:     string(news.Status),
 			Author:     author,
-			Type:       string(news.Type),
+			Types:      string(news.Type),
 			CreatedAt:  news.CreatedAt.Format("2006-01-02 15:04:05"),
 			UpdatedAt:  news.UpdatedAt.Format("2006-01-02 15:04:05"),
 		}

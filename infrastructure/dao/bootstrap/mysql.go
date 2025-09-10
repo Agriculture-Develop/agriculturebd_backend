@@ -30,8 +30,6 @@ func initDb() {
 		sql.Charset,
 	)
 
-	fmt.Println(dsn)
-
 	db, err = gorm.Open(mysql.New(mysql.Config{
 		DSN:                       dsn,
 		DefaultStringSize:         256,
