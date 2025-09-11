@@ -31,6 +31,7 @@ func (r *NewsRepo) Create(news *entity.News) error {
 		FilesURL:   news.FilesURL,
 		CoverURL:   news.CoverURL,
 		UserID:     news.UserID,
+		Type:       string(news.Type),
 		CategoryID: news.CategoryID,
 	}
 	return r.Db.Create(dbNews).Error
@@ -49,6 +50,7 @@ func (r *NewsRepo) Update(news *entity.News) error {
 		"comment":     news.Comment,
 		"files_url":   datatypes.JSON(filesURLJSON),
 		"cover_url":   news.CoverURL,
+		"type":        news.Type,
 		"category_id": news.CategoryID,
 	}).Error
 }
