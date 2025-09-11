@@ -65,15 +65,15 @@ func (ctrl *ApiContext[T]) GetUserIdByToken() uint {
 	return 0
 }
 
-func (ctrl *ApiContext[T]) GetUserIdByRole() int {
+func (ctrl *ApiContext[T]) GetRoleByToken() int {
 	uid, exists := ctrl.c.Get(roleKey)
 	if !exists {
-		return 0
+		return -10
 	}
 	if id, ok := uid.(int); ok {
 		return id
 	}
-	return 0
+	return -10
 }
 
 // GetIdByPath get user id from path

@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/valobj"
 	"github.com/Agriculture-Develop/agriculturebd/domain/common/respCode"
 	utils "github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/jwt"
@@ -57,7 +56,7 @@ func WithAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := controller.NewAPiContext[struct{}](c)
 
-		if ctx.GetUserIdByRole() != valobj.RoleAdmin.Int() || ctx.GetUserIdByRole() != valobj.RoleSuperAdmin.Int() {
+		if ctx.GetRoleByToken() != valobj.RoleAdmin.Int() && ctx.GetRoleByToken() != valobj.RoleSuperAdmin.Int() {
 			ctx.NoDataJSON(respCode.Forbidden)
 			c.Abort()
 			return
@@ -70,8 +69,7 @@ func WithSuperAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := controller.NewAPiContext[struct{}](c)
 
-		fmt.Println(ctx.GetUserIdByRole())
-		if ctx.GetUserIdByRole() != valobj.RoleSuperAdmin.Int() {
+		if ctx.GetRoleByToken() != valobj.RoleSuperAdmin.Int() {
 			ctx.NoDataJSON(respCode.Forbidden)
 			c.Abort()
 			return

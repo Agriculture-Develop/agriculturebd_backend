@@ -39,6 +39,7 @@ func (r *Repo) GetUserById(id uint) (*entity.User, error) {
 		ID:       user.ID,
 		Phone:    user.Phone,
 		Password: user.Password,
+		Status:   valobj.UserStatus(user.Status),
 		Role:     valobj.UserRole(user.Role),
 	}, nil
 
@@ -54,6 +55,7 @@ func (r *Repo) GetUserByPhone(phone string) (*entity.User, error) {
 		ID:       user.ID,
 		Phone:    user.Phone,
 		Password: user.Password,
+		Status:   valobj.UserStatus(user.Status),
 		Role:     valobj.UserRole(user.Role),
 	}, nil
 }

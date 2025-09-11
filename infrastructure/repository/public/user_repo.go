@@ -63,12 +63,13 @@ func (r *Repo) GetUserById(id uint) (*entity.User, error) {
 }
 
 func (r *Repo) UpdateUser(user *entity.User) error {
-	return r.Db.Where("id = ?", user.ID).Updates(&model.User{
-		Nickname:   user.Nickname,
-		Role:       int(user.Role),
-		Status:     int(user.Status),
-		AvatarPath: user.AvatarPath,
-	}).Error
+	return r.Db.Where("id = ?", user.ID).Select("nickname", "role", "status", "avatar_path").
+		Updates(&model.User{
+			Nickname:   user.Nickname,
+			Role:       int(user.Role),
+			Status:     int(user.Status),
+			AvatarPath: user.AvatarPath,
+		}).Error
 }
 
 func (r *Repo) DeleteUser(id uint) error {
