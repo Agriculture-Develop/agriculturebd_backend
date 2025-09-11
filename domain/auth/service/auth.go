@@ -56,6 +56,10 @@ func (a *Svc) LoginByPassword(phone, password string) (respCode.StatusCode, vo.L
 		return respCode.InvalidPassword, vo.LoginSvcVo{}
 	}
 
+	if !user.IsEnabled() {
+		return respCode.UserALREADYLocked, vo.LoginSvcVo{}
+	}
+
 	// 3. 生成token
 	token, err := a.Repo.GenerateToken(user.ID, user.Role.Int())
 	if err != nil {
@@ -89,6 +93,10 @@ func (a *Svc) LoginByCode(phone, code string) (respCode.StatusCode, vo.LoginSvcV
 			zap.L().Error("CheckPassword fail", zap.Error(err))
 			return respCode.ServerBusy, vo.LoginSvcVo{}
 		}
+	}
+
+	if !user.IsEnabled() {
+		return respCode.UserALREADYLocked, vo.LoginSvcVo{}
 	}
 
 	// 3. 生成token

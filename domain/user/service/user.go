@@ -89,7 +89,7 @@ func (s *Svc) UpdateUserInfo(userId uint, nickname string, role, status string) 
 		user.Role = valobj.GetUserRole(role)
 	}
 
-	if valobj.GetUserStatus(status) != valobj.StatusUnknown {
+	if len(status) != 0 && user.Role != valobj.RoleSuperAdmin {
 		user.Status = valobj.GetUserStatus(status)
 	}
 
