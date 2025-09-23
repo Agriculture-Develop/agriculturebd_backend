@@ -156,18 +156,18 @@ func (s *SupplyDemandCommentSvc) DeleteComment(userid, id uint) respCode.StatusC
 		return respCode.ServerBusy
 	}
 
-	// 2. 检查用户是否是该评论的作者
-	user, err := s.userRepo.GetUserById(uint(comment.UserID))
+	// 2. 获取用户权限信息
+	user, err := s.userRepo.GetUserById(userid)
 	if err != nil {
 		zap.L().Error("GetUserById fail", zap.Error(err))
 		return respCode.ServerBusy
 	}
+
 	if user.Role < 1 && uint(comment.UserID) != userid {
 		return respCode.Forbidden
 	}
 
 	//2. 删除子评论
-
 	if err := s.Repo.DeleteByParentId(comment.ID); err != nil {
 		zap.L().Error("DeleteComment fail", zap.Error(err))
 		return respCode.ServerBusy
