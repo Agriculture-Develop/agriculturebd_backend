@@ -62,6 +62,14 @@ func (r *Repo) GetUserById(id uint) (*entity.User, error) {
 	}, nil
 }
 
+func (r *Repo) GetUserIDsByRole(role int) ([]uint, error) {
+	var ids []uint
+	if err := r.Db.Model(&model.User{}).Where("role = ?", role).Pluck("id", &ids).Error; err != nil {
+		return nil, err
+	}
+	return ids, nil
+}
+
 func (r *Repo) UpdateUser(user *entity.User) error {
 	return r.Db.Where("id = ?", user.ID).Select("nickname", "role", "status", "avatar_path").
 		Updates(&model.User{

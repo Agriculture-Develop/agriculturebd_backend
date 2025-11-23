@@ -10,6 +10,7 @@ type SupplyDemand struct {
 	ID       uint   `json:"id"`
 	Title    string `json:"title"`
 	Content  string `json:"content"`
+	Category string `json:"category"`
 	TagWeigh string `json:"tag_count"`
 	TagName  string `json:"tag_name"`
 	TagPrice string `json:"tag_price"`
@@ -25,14 +26,13 @@ type SupplyDemand struct {
 }
 
 type SupplyDemandComment struct {
-	ID             int64  `json:"id"`
-	SupplyDemandID int64  `json:"supply_demand_id"`
-	UserID         int64  `json:"user_id"`
-	CommentContent string `json:"comment_content"`
-	LikeCount      int    `json:"like_count"`
-	ReplyId        int64  `json:"reply_id"`
-
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `json:"-"`
+	ID             int64          `json:"id"`
+	SupplyDemandID int64          `json:"supply_demand_id"`
+	UserID         int64          `json:"user_id"`
+	CommentContent string         `json:"comment_content"`
+	LikeCount      int            `json:"like_count"`
+	ReplyId        int64          `json:"reply_id"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      time.Time      `json:"updated_at"`
+	DeletedAt      gorm.DeletedAt `json:"-"`
 }

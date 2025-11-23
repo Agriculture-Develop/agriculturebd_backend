@@ -38,9 +38,13 @@ func (c *SupplyDemandCtrl) GetSupplyDemandList(ctx *gin.Context) {
 
 	// DTO 转换
 	filter := svcDto.SupplyDemandListFilterSvcDTO{
-		Title: apiCtx.Request.Title,
-		Page:  apiCtx.Request.Page,
-		Count: apiCtx.Request.Count,
+		Title:     apiCtx.Request.Title,
+		Category:  apiCtx.Request.Category,
+		UserRole:  apiCtx.Request.UserRole,
+		SortField: apiCtx.Request.SortField,
+		SortOrder: apiCtx.Request.SortOrder,
+		Page:      apiCtx.Request.Page,
+		Count:     apiCtx.Request.Count,
 	}
 
 	code, vo := c.Services.ListSupplyDemand(filter)
@@ -62,6 +66,7 @@ func (c *SupplyDemandCtrl) GetSupplyDemandList(ctx *gin.Context) {
 			CreatedAt: item.CreatedAt,
 			Title:     item.Title,
 			Content:   item.Content,
+			Category:  item.Category,
 			TagName:   item.TagName,
 			TagWeigh:  item.TagWeigh,
 			TagPrice:  item.TagPrice,
@@ -94,6 +99,7 @@ func (c *SupplyDemandCtrl) GetSupplyDemandDetail(ctx *gin.Context) {
 		UserId:        vo.UserId,
 		Title:         vo.Title,
 		Content:       vo.Content,
+		Category:      vo.Category,
 		CoverURL:      vo.CoverURL,
 		FilesURL:      vo.FilesURL,
 		PublisherName: vo.PublisherName,
@@ -122,6 +128,7 @@ func (c *SupplyDemandCtrl) CreateSupplyDemand(ctx *gin.Context) {
 	dto := svcDto.SupplyDemandCreateSvcDTO{
 		Title:    apiCtx.Request.Title,
 		Content:  apiCtx.Request.Content,
+		Category: apiCtx.Request.Category,
 		CoverURL: apiCtx.Request.Cover,
 		FilesURL: apiCtx.Request.Files,
 		TagName:  apiCtx.Request.TagName,

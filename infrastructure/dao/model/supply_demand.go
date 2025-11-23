@@ -1,8 +1,9 @@
 package model
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type SupplyDemand struct {
@@ -10,6 +11,7 @@ type SupplyDemand struct {
 
 	Title    string   `gorm:"type:varchar(255);not null;comment:标题" json:"title"`
 	Content  string   `gorm:"type:text;comment:内容" json:"content"`
+	Category string   `gorm:"type:varchar(50);default:'';comment:类别(水果/农作物)" json:"category"`
 	CoverURL string   `gorm:"type:varchar(512);default:'';comment:封面图地址" json:"cover_url"`
 	FilesURL []string `gorm:"serializer:json;type:json;comment:附件地址列表" json:"files_url"`
 	Likes    int      `gorm:"type:int;default:0;comment:点赞数" json:"likes"`

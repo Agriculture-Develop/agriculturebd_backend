@@ -14,10 +14,22 @@ type ISupplyDemandRepo interface {
 }
 
 type SupplyDemandListFilter struct {
-	Title string
-	Page  int
-	Count int
+	Title     string
+	Category  string
+	UserIDs   []uint
+	SortField string
+	SortOrder string
+	Page      int
+	Count     int
 }
+
+const (
+	SortFieldCreatedAt = "created_at"
+	SortFieldPrice     = "price"
+
+	SortOrderAsc  = "asc"
+	SortOrderDesc = "desc"
+)
 
 type ISupplyDemandCommentRepo interface {
 	// 创建评论

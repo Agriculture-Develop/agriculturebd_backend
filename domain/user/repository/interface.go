@@ -11,6 +11,8 @@ type IUserRepo interface {
 	GetUserCount() (int64, error)
 	// 根据ID获取用户
 	GetUserById(id uint) (*entity.User, error)
+	// 根据角色获取用户ID列表
+	GetUserIDsByRole(role int) ([]uint, error)
 	// 更新用户信息
 	UpdateUser(user *entity.User) error
 	// 删除用户

@@ -9,13 +9,18 @@ type SupplyDemandCreateCtrlDTO struct {
 	TagName  string   `json:"tag_name"`
 	TagPrice string   `json:"tag_price"`
 	TagWeigh string   `json:"tag_weigh"`
+	Category string   `json:"category" binding:"required"`
 }
 
 // SupplyDemandListFilterCtrlDTO 供需列表筛选请求
 type SupplyDemandListFilterCtrlDTO struct {
-	Title string `form:"title"`
-	Page  int    `form:"page"`
-	Count int    `form:"count"`
+	Title     string `form:"title"`
+	Category  string `form:"category"`
+	UserRole  *int   `form:"user_role"`
+	SortField string `form:"sort_field"`
+	SortOrder string `form:"sort_order"`
+	Page      int    `form:"page"`
+	Count     int    `form:"count"`
 }
 
 // CommentCreateCtrlDTO 创建评论请求

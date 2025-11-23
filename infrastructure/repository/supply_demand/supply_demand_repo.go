@@ -1,7 +1,6 @@
 package supply_demand
 
 import (
-	"fmt"
 	"github.com/Agriculture-Develop/agriculturebd/domain/supply_demand/entity"
 	"github.com/Agriculture-Develop/agriculturebd/domain/supply_demand/repository"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/dao/model"
@@ -32,6 +31,7 @@ func (r *SupplyDemandRepo) Create(supplyDemand *entity.SupplyDemand) error {
 	daoModel := &model.SupplyDemand{
 		Title:    supplyDemand.Title,
 		Content:  supplyDemand.Content,
+		Category: supplyDemand.Category,
 		Tag:      tag,
 		CoverURL: supplyDemand.CoverURL,
 		FilesURL: supplyDemand.FilesURL,
@@ -61,6 +61,7 @@ func (r *SupplyDemandRepo) GetByID(id uint) (*entity.SupplyDemand, error) {
 		ID:        daoModel.ID,
 		Title:     daoModel.Title,
 		Content:   daoModel.Content,
+		Category:  daoModel.Category,
 		TagName:   daoModel.Tag.Name,
 		TagPrice:  daoModel.Tag.Price,
 		TagWeigh:  daoModel.Tag.Weigh,
@@ -81,12 +82,16 @@ func (r *SupplyDemandRepo) List(filter repository.SupplyDemandListFilter) ([]*en
 	var daoModels []model.SupplyDemand
 	var total int64
 
-	fmt.Println("filter.Title: ", filter.Title)
-
 	// 构建查询条件
 	query := r.DB.Model(&model.SupplyDemand{})
 	if filter.Title != "" {
 		query = query.Where("title LIKE ?", "%"+filter.Title+"%")
+	}
+	if filter.Category != "" {
+		query = query.Where("category = ?", filter.Category)
+	}
+	if len(filter.UserIDs) > 0 {
+		query = query.Where("user_id IN ?", filter.UserIDs)
 	}
 
 	// 获取总数
@@ -96,7 +101,16 @@ func (r *SupplyDemandRepo) List(filter repository.SupplyDemandListFilter) ([]*en
 
 	// 分页查询
 	offset := (filter.Page - 1) * filter.Count
-	if err := query.Offset(offset).Limit(filter.Count).Order("created_at DESC").Find(&daoModels).Error; err != nil {
+	orderDirection := "DESC"
+	if filter.SortOrder == repository.SortOrderAsc {
+		orderDirection = "ASC"
+	}
+	orderExpr := "created_at " + orderDirection
+	if filter.SortField == repository.SortFieldPrice {
+		orderExpr = "CAST(tag_price AS DECIMAL(10,2)) " + orderDirection
+	}
+
+	if err := query.Offset(offset).Limit(filter.Count).Order(orderExpr).Find(&daoModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -107,6 +121,7 @@ func (r *SupplyDemandRepo) List(filter repository.SupplyDemandListFilter) ([]*en
 			ID:       daoModel.ID,
 			Title:    daoModel.Title,
 			Content:  daoModel.Content,
+			Category: daoModel.Category,
 			TagName:  daoModel.Tag.Name,
 			TagPrice: daoModel.Tag.Price,
 			TagWeigh: daoModel.Tag.Weigh,

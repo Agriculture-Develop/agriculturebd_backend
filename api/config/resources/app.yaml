@@ -36,8 +36,8 @@ auth:
 
 # ----------------------------------------- Mysql 配置   -------------------------------------------------------
 mysql:
-  host: localhost
-  port: 3306
+  host: 47.121.189.38
+  port: 23306
   dbname: agriculture
   username: ""
   password: ""

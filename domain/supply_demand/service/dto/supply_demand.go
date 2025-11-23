@@ -4,6 +4,7 @@ package dto
 type SupplyDemandCreateSvcDTO struct {
 	Title    string   `json:"title"`
 	Content  string   `json:"content"`
+	Category string   `json:"category"`
 	CoverURL string   `json:"cover_url"`
 	FilesURL []string `json:"files_url"`
 	TagName  string   `json:"tag_name"`
@@ -14,10 +15,22 @@ type SupplyDemandCreateSvcDTO struct {
 
 // SupplyDemandListFilterSvcDTO 供需列表筛选服务层DTO
 type SupplyDemandListFilterSvcDTO struct {
-	Title string `json:"title"`
-	Page  int    `json:"page"`
-	Count int    `json:"count"`
+	Title     string `json:"title"`
+	Category  string `json:"category"`
+	UserRole  *int   `json:"user_role"`
+	SortField string `json:"sort_field"`
+	SortOrder string `json:"sort_order"`
+	Page      int    `json:"page"`
+	Count     int    `json:"count"`
 }
+
+const (
+	SortFieldCreatedAt = "created_at"
+	SortFieldPrice     = "price"
+
+	SortOrderAsc  = "asc"
+	SortOrderDesc = "desc"
+)
 
 // CommentCreateSvcDTO 创建评论服务层DTO
 type CommentCreateSvcDTO struct {

@@ -6,6 +6,7 @@ type SupplyDemandDetailVO struct {
 	UserId        uint     `json:"user_id"`
 	Title         string   `json:"title"`
 	Content       string   `json:"content"`
+	Category      string   `json:"category"`
 	CoverURL      string   `json:"cover_url"`
 	FilesURL      []string `json:"files_url"`
 	PublisherName string   `json:"publisher_name"`
@@ -34,6 +35,7 @@ type SupplyDemandItemVO struct {
 	CreatedAt string `json:"created_at"`
 	Title     string `json:"title"`
 	Content   string `json:"content"`
+	Category  string `json:"category"`
 	TagName   string `json:"tag_name"`
 	TagWeigh  string `json:"tag_weigh"`
 	TagPrice  string `json:"tag_price"`

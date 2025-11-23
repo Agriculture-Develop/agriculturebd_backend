@@ -5,6 +5,7 @@ import (
 	userRepo "github.com/Agriculture-Develop/agriculturebd/domain/user/repository"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/upload"
 	"strconv"
+	"strings"
 
 	"github.com/Agriculture-Develop/agriculturebd/domain/common/respCode"
 	"github.com/Agriculture-Develop/agriculturebd/domain/supply_demand/entity"
@@ -29,7 +30,7 @@ func NewSupplyDemandService(demandRepo demandRepo.ISupplyDemandRepo, userRepo us
 // CreateSupplyDemand 创建供需
 func (s *SupplyDemandSvc) CreateSupplyDemand(dto dto.SupplyDemandCreateSvcDTO) respCode.StatusCode {
 	// 1. 参数校验
-	if dto.Title == "" || dto.Content == "" {
+	if dto.Title == "" || dto.Content == "" || dto.Category == "" {
 		return respCode.InvalidParamsFormat
 	}
 
@@ -37,6 +38,7 @@ func (s *SupplyDemandSvc) CreateSupplyDemand(dto dto.SupplyDemandCreateSvcDTO) r
 	supplyDemand := &entity.SupplyDemand{
 		Title:    dto.Title,
 		Content:  dto.Content,
+		Category: dto.Category,
 		CoverURL: dto.CoverURL,
 		FilesURL: dto.FilesURL,
 		TagName:  dto.TagName,
@@ -78,6 +80,7 @@ func (s *SupplyDemandSvc) GetSupplyDemandDetail(id uint) (respCode.StatusCode, *
 		UserId:        supplyDemand.UserId,
 		Title:         supplyDemand.Title,
 		Content:       supplyDemand.Content,
+		Category:      supplyDemand.Category,
 		CoverURL:      supplyDemand.CoverURL,
 		FilesURL:      supplyDemand.FilesURL,
 		PublisherName: u.Nickname,
@@ -103,9 +106,37 @@ func (s *SupplyDemandSvc) ListSupplyDemand(filter dto.SupplyDemandListFilterSvcD
 
 	// 2. 构建筛选条件
 	repoFilter := demandRepo.SupplyDemandListFilter{
-		Title: filter.Title,
-		Page:  filter.Page,
-		Count: filter.Count,
+		Title:    filter.Title,
+		Category: filter.Category,
+		Page:     filter.Page,
+		Count:    filter.Count,
+	}
+
+	if filter.UserRole != nil {
+		ids, err := s.UserRepo.GetUserIDsByRole(*filter.UserRole)
+		if err != nil {
+			zap.L().Error("GetUserIDsByRole fail", zap.Error(err))
+			return respCode.ServerBusy, nil
+		}
+		if len(ids) == 0 {
+			return respCode.Success, &vo.SupplyDemandListSvcVO{Total: 0, List: []vo.SupplyDemandListItemSvcVO{}}
+		}
+		repoFilter.UserIDs = ids
+	}
+
+	sortField := strings.ToLower(filter.SortField)
+	switch sortField {
+	case dto.SortFieldPrice:
+		repoFilter.SortField = demandRepo.SortFieldPrice
+	default:
+		repoFilter.SortField = demandRepo.SortFieldCreatedAt
+	}
+
+	sortOrder := strings.ToLower(filter.SortOrder)
+	if sortOrder == dto.SortOrderAsc {
+		repoFilter.SortOrder = demandRepo.SortOrderAsc
+	} else {
+		repoFilter.SortOrder = demandRepo.SortOrderDesc
 	}
 
 	// 3. 获取供需列表
@@ -125,6 +156,7 @@ func (s *SupplyDemandSvc) ListSupplyDemand(filter dto.SupplyDemandListFilterSvcD
 			CreatedAt: item.CreatedAt.Format("2006-01-02 15:04:05"),
 			Title:     item.Title,
 			Content:   item.Content,
+			Category:  item.Category,
 			TagName:   item.TagName,
 			TagWeigh:  item.TagWeigh,
 			TagPrice:  item.TagPrice,
