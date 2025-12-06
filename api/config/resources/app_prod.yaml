@@ -24,7 +24,7 @@ log:
 
 # ----------------------------------------- Auth 配置   -------------------------------------------------------
 auth:
-  jwtExpireTime: 60m
+  jwtExpireTime: 2d
   jwtSecret: agriculture_access
   issuer: zty
   isUserExpireTime: 30m

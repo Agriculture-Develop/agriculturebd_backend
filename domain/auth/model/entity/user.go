@@ -1,9 +1,10 @@
 package entity
 
 import (
-	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/valobj"
 	"regexp"
 	"time"
+
+	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/valobj"
 )
 
 type User struct {

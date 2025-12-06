@@ -97,3 +97,17 @@ INSERT INTO `supply_demand` (`title`,`content`,`category`,`tag_weigh`,`tag_name`
 ('优质苹果出售','果园现采红富士苹果','水果','10斤装','红富士','80元',1);
 -- 恢复外键检查
 SET FOREIGN_KEY_CHECKS=1;
+-- 修正 news 表中的状态
+ALTER TABLE news MODIFY status ENUM(
+    'draft','reviewing','approved','published','unpublished','offline',
+    '未提交','审核中','审核已通过','审核已驳回','未发布','已发布','已下线'
+    ) NOT NULL DEFAULT 'draft';
+
+UPDATE news SET status = '未提交'     WHERE status = 'draft';
+UPDATE news SET status = '审核中'     WHERE status = 'reviewing';
+UPDATE news SET status = '审核已通过' WHERE status = 'approved';
+UPDATE news SET status = '未发布'     WHERE status = 'unpublished';
+UPDATE news SET status = '已发布'     WHERE status = 'published';
+UPDATE news SET status = '已下线'     WHERE status = 'offline';
+
+

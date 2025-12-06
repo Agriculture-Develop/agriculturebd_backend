@@ -2,12 +2,13 @@ package auth
 
 import (
 	"context"
+	"time"
+
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/entity"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/model/valobj"
 	"github.com/Agriculture-Develop/agriculturebd/domain/auth/repository"
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/cache"
 	"go.uber.org/dig"
-	"time"
 
 	"github.com/Agriculture-Develop/agriculturebd/infrastructure/dao/model"
 
@@ -62,10 +63,12 @@ func (r *Repo) GetUserByPhone(phone string) (*entity.User, error) {
 
 func (r *Repo) CreateUser(user *entity.User) error {
 	dbUser := &model.User{
-		Phone:    user.Phone,
-		Password: user.Password,
-		Role:     user.Role.Int(),
-		Status:   user.Status.Int(),
+		Phone:      user.Phone,
+		Password:   user.Password,
+		Role:       user.Role.Int(),
+		Status:     user.Status.Int(),
+		Nickname:   "微信用户",
+		AvatarPath: "default.png",
 	}
 
 	return r.Db.Create(dbUser).Error
