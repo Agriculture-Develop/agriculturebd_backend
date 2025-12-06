@@ -5,7 +5,6 @@ go.*
 */*.log
 */*.json
 
-/doc/file/*
 /doc/logs/*
 
 /api/config/resources/app_secret.yaml
