@@ -17,7 +17,7 @@ type SupplyDemandCreateSvcDTO struct {
 type SupplyDemandListFilterSvcDTO struct {
 	Title     string `json:"title"`
 	Category  string `json:"category"`
-	UserRole  *int   `json:"user_role"`
+	UserRole  string `json:"user_role"`
 	SortField string `json:"sort_field"`
 	SortOrder string `json:"sort_order"`
 	Page      int    `json:"page"`

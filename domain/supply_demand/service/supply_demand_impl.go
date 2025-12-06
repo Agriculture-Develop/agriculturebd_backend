@@ -2,10 +2,12 @@ package service
 
 import (
 	"errors"
-	userRepo "github.com/Agriculture-Develop/agriculturebd/domain/user/repository"
-	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/upload"
 	"strconv"
 	"strings"
+
+	"github.com/Agriculture-Develop/agriculturebd/domain/user/model/valobj"
+	userRepo "github.com/Agriculture-Develop/agriculturebd/domain/user/repository"
+	"github.com/Agriculture-Develop/agriculturebd/infrastructure/utils/upload"
 
 	"github.com/Agriculture-Develop/agriculturebd/domain/common/respCode"
 	"github.com/Agriculture-Develop/agriculturebd/domain/supply_demand/entity"
@@ -112,8 +114,10 @@ func (s *SupplyDemandSvc) ListSupplyDemand(filter dto.SupplyDemandListFilterSvcD
 		Count:    filter.Count,
 	}
 
-	if filter.UserRole != nil {
-		ids, err := s.UserRepo.GetUserIDsByRole(*filter.UserRole)
+	roleId := valobj.GetUserRole(filter.UserRole)
+
+	if roleId != valobj.RoleUnknown {
+		ids, err := s.UserRepo.GetUserIDsByRole(roleId.Int())
 		if err != nil {
 			zap.L().Error("GetUserIDsByRole fail", zap.Error(err))
 			return respCode.ServerBusy, nil

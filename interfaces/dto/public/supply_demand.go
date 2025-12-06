@@ -16,7 +16,7 @@ type SupplyDemandCreateCtrlDTO struct {
 type SupplyDemandListFilterCtrlDTO struct {
 	Title     string `form:"title"`
 	Category  string `form:"category"`
-	UserRole  *int   `form:"user_role"`
+	UserRole  string `form:"user_role"`
 	SortField string `form:"sort_field"`
 	SortOrder string `form:"sort_order"`
 	Page      int    `form:"page"`
